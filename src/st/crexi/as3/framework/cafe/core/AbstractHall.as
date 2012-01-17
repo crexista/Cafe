@@ -1,5 +1,6 @@
 package st.crexi.as3.framework.cafe.core
 {
+	//後でライセンスを追記する
 	import flash.utils.describeType;
 	import flash.utils.getQualifiedClassName;
 	
