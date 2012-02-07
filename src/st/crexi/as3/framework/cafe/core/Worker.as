@@ -11,7 +11,7 @@ package st.crexi.as3.framework.cafe.core
 	 * Requestによって起動されるクラスです<br/>
 	 * RequestからRecipeを受け取り、それに従ってイベント処理を行います<br>
 	 * 
-	 * @author kaoru_shibasaki
+	 * @author crexista
 	 * 
 	 */	
 	public class Worker

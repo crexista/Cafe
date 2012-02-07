@@ -40,12 +40,21 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		public function start():void
 		{
-			for each(var task:ITask in _order.requestList) {
+			var obj:Object = _order.requestList;
+			for each(var task:ITask in _order.requestList) {				
+				var isWait:Boolean = false;
 				
-				if (AbstractTask(task).$isStarted) continue;
+				if (AbstTask(task).$isStarted) continue;
+				
+				for each(var request:IRequest in task.dependencies) {
+					if (!request.isEnded) isWait = true;
+					if (isWait) break;
+				}
+				
+				if (isWait) continue;
 				task.notifier.addEventListener(RequestEvent.COMPLETE, onComplete);
 				task.execute();
-				AbstractTask(task).$isStarted = true;
+				AbstTask(task).$isStarted = true;
 
 			}
 		}
@@ -54,11 +63,16 @@ package st.crexi.as3.framework.cafe.core
 		protected function onComplete(event:RequestEvent):void
 		{
 			var tasks:Vector.<ITask> = Kitchen.instance.getTasks(event.request);
-			
+			var isWait:Boolean = false;
 			for each(var task:ITask in tasks) {
-				if (task.isEnded || task.isStarted) continue;
+				isWait = false;
+				for each(var request:IRequest in task.dependencies) {
+					if (!request.isEnded) isWait = true;
+					if (isWait) break;
+				}
+				if (isWait) continue;
 				task.execute();
-				AbstractTask(task).$isStarted = true;
+				AbstTask(task).$isStarted = true;
 			}
 		}
 		
@@ -86,8 +100,11 @@ package st.crexi.as3.framework.cafe.core
 		{			
 			var tasks:Vector.<ITask> = new Vector.<ITask>;
 			
-			for each(var task:IRequest in request.dependencies) {
-				Kitchen.instance.register(request, task);
+			trace(request.dependencies);
+			if (request.dependencies) {
+				for each(var task:IRequest in request.dependencies) {
+					Kitchen.instance.register(request, task);
+				}
 			}
 			
 			return tasks;
@@ -104,7 +121,7 @@ package st.crexi.as3.framework.cafe.core
 		{			
 			_order = order;
 
-			for each(var request:IRequest in order) {
+			for each(var request:IRequest in order.requestList) {
 				analyzeRequest(request);
 			}
 		}

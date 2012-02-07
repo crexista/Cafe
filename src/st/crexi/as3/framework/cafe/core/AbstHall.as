@@ -1,6 +1,6 @@
 package st.crexi.as3.framework.cafe.core
 {
-	//後でライセンスを追記する
+	//後でライセンスを追記する                                                             
 	import flash.utils.describeType;
 	import flash.utils.getQualifiedClassName;
 	
@@ -13,10 +13,10 @@ package st.crexi.as3.framework.cafe.core
 	/**
 	 * 使用するAspectクラスを列挙するリストクラスです
 	 * 
-	 * @author kaoru_shibasaki
+	 * @author crexista
 	 * 
 	 */	
-	public class AbstractHall
+	public class AbstHall
 	{
 
 
@@ -45,7 +45,7 @@ package st.crexi.as3.framework.cafe.core
 		 * コンストラクタです
 		 * 
 		 */		
-		public function AbstractHall()
+		public function AbstHall()
 		{
 			taskInvoke();
 		}

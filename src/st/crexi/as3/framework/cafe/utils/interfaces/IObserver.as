@@ -4,7 +4,7 @@ package st.crexi.as3.framework.cafe.utils.interfaces
 
 	/**
 	 * Observerのインターフェースです 
-	 * @author kaoru_shibasaki
+	 * @author crexista
 	 * 
 	 */	
 	public interface IObserver

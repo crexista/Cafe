@@ -11,7 +11,7 @@ package st.crexi.as3.framework.cafe.utils
 	
 	/**
 	 * webAPIを叩いたさいのObserverです
-	 * @author kaoru_shibasaki
+	 * @author crexista
 	 * 
 	 */
 	public class APIObserver extends AbstractObserver implements IObserver

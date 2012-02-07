@@ -55,8 +55,8 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		public function register(request:IRequest, task:ITask):void
 		{
-			if (!_tasks[request]) _tasks[request] = new Vector.<ITask>;
-			_tasks[request].push(task);
+			if (!_tasks[task]) _tasks[task] = new Vector.<ITask>;
+			_tasks[task].push(request);
 		}
 		
 		

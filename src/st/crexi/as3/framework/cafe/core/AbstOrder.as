@@ -13,9 +13,11 @@ package st.crexi.as3.framework.cafe.core
 	 * @author crexista
 	 * 
 	 */	
-	public class AbstractOrder
+	public class AbstOrder
 	{
 
+		
+		
 
 		/**
 		 * requestクラスをキーとしてrequestそのものをかえす関数です
@@ -89,7 +91,7 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		final public function start():void
 		{
-			
+			_waiter = new Waiter(IOrder(this));
 			_waiter.start();
 		}
 		
@@ -110,7 +112,7 @@ package st.crexi.as3.framework.cafe.core
 				_requestList[name] = _requests[name];
 			}
 
-			_waiter = new Waiter(IOrder(this));
+			
 		}
 		
 		
@@ -120,7 +122,7 @@ package st.crexi.as3.framework.cafe.core
 		 * waiterを起動させ、Orderの処理をwaiterに任せます
 		 * 
 		 */		
-		public function AbstractOrder()
+		public function AbstOrder()
 		{
 			requestAnalyze();
 		}

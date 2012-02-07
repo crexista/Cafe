@@ -3,7 +3,7 @@ package st.crexi.as3.framework.cafe.core.interfaces
 	
 	/**
 	 * 
-	 * @author kaoru_shibasaki
+	 * @author crexista
 	 * 
 	 */	
 	public interface IOrder

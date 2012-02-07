@@ -7,7 +7,7 @@ package st.crexi.as3.framework.cafe.utils
 	/**
 	 * ObserverのBaseとなるクラスです
 	 * 
-	 * @author kaoru_shibasaki
+	 * @author crexista
 	 * 
 	 */	
 	public class AbstractObserver

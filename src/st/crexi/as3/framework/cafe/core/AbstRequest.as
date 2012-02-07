@@ -24,7 +24,7 @@ package st.crexi.as3.framework.cafe.core
 	 * @author crexista
 	 * 
 	 */	
-	public class AbstractRequest extends AbstractTask
+	public class AbstRequest extends AbstTask
 	{
 		
 		
@@ -83,6 +83,7 @@ package st.crexi.as3.framework.cafe.core
 		protected function onComplete(event:Event):void
 		{
 			_result = WorkerEvent(event).worker.result;
+			this.$isEnded = true;
 			this.notifier.dispatchEvent(new RequestEvent(RequestEvent.COMPLETE, IRequest(this)));
 		}
 
@@ -92,7 +93,7 @@ package st.crexi.as3.framework.cafe.core
 		 * コンストラクタです
 		 * 
 		 */		
-		public function AbstractRequest()
+		public function AbstRequest()
 		{
 			_eventSender = new EventDispatcher();
 		}		

@@ -10,7 +10,7 @@ package st.crexi.as3.framework.cafe.core.interfaces
 	 * 実際の処理実行自体はWorkerクラスで行います
 	 * 
 	 *  
-	 * @author kaoru_shibasaki
+	 * @author crexista
 	 * 
 	 */	
 	public interface IRequest extends ITask

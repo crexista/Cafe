@@ -3,7 +3,7 @@ package st.crexi.as3.framework.cafe.core
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 
-	public class AbstractTask
+	public class AbstTask
 	{
 		/**
 		 * requestがスタートしているか否か
@@ -49,7 +49,7 @@ package st.crexi.as3.framework.cafe.core
 		}
 		
 		
-		public function AbstractTask()
+		public function AbstTask()
 		{
 			_eventDispatcer = new EventDispatcher;
 		}
