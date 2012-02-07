@@ -42,7 +42,7 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		 * @return 
 		 * 
 		 */		
-		function get dependencies():Vector.<IRequest>
+		function get dependencies():Array; /*Vector.<IRequest>*/
 		
 		
 		/**

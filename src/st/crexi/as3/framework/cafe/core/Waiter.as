@@ -64,6 +64,9 @@ package st.crexi.as3.framework.cafe.core
 		{
 			var tasks:Vector.<ITask> = Kitchen.instance.getTasks(event.request);
 			var isWait:Boolean = false;
+			
+			
+			
 			for each(var task:ITask in tasks) {
 				isWait = false;
 				for each(var request:IRequest in task.dependencies) {
@@ -71,6 +74,11 @@ package st.crexi.as3.framework.cafe.core
 					if (isWait) break;
 				}
 				if (isWait) continue;
+				
+				if (!task.notifier.hasEventListener(RequestEvent.COMPLETE)) {
+					task.notifier.addEventListener(RequestEvent.COMPLETE, onComplete);
+				}
+				
 				task.execute();
 				AbstTask(task).$isStarted = true;
 			}
@@ -96,13 +104,12 @@ package st.crexi.as3.framework.cafe.core
 		 * @return 
 		 * 
 		 */		
-		protected function analyzeRequest(request:IRequest):Vector.<ITask>
+		protected function analyzeRequest(request:ITask):Vector.<ITask>
 		{			
-			var tasks:Vector.<ITask> = new Vector.<ITask>;
+			var tasks:Vector.<ITask> = new Vector.<ITask>;			
 			
-			trace(request.dependencies);
 			if (request.dependencies) {
-				for each(var task:IRequest in request.dependencies) {
+				for each(var task:ITask in request.dependencies) {
 					Kitchen.instance.register(request, task);
 				}
 			}
@@ -121,7 +128,7 @@ package st.crexi.as3.framework.cafe.core
 		{			
 			_order = order;
 
-			for each(var request:IRequest in order.requestList) {
+			for each(var request:ITask in order.requestList) {
 				analyzeRequest(request);
 			}
 		}

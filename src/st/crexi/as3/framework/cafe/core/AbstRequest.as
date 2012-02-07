@@ -10,6 +10,7 @@ package st.crexi.as3.framework.cafe.core
 	import st.crexi.as3.framework.cafe.core.Event.WorkerEvent;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRecipe;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
+	import st.crexi.as3.framework.cafe.core.interfaces.ITask;
 	
 	
 	/**
@@ -72,6 +73,9 @@ package st.crexi.as3.framework.cafe.core
 			if (_worker) {
 				_worker.notifier.removeEventListener(WorkerEvent.COMPLETE, onComplete);
 				_worker = null;
+				for each(var task:AbstTask in Kitchen.instance.getTasks(IRequest(this))) {
+					task.$isEnded = false;
+				}
 			}
 			_worker = new Worker(IRequest(this).recipe);
 			_worker.notifier.addEventListener(WorkerEvent.COMPLETE, onComplete);
