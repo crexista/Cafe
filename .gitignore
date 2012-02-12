@@ -3,5 +3,6 @@
 .project
 .settings/
 .bin/
+bin/
 bin-debug/
 .svn/
