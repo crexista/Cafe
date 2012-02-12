@@ -1,7 +1,7 @@
 package st.crexi.as3.framework.cafe.core
 {
 	import st.crexi.as3.framework.cafe.core.Event.RequestEvent;
-	import st.crexi.as3.framework.cafe.core.interfaces.IDependency;
+	import st.crexi.as3.framework.cafe.core.interfaces.IDependencies;
 	import st.crexi.as3.framework.cafe.core.interfaces.IOrder;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
 	import st.crexi.as3.framework.cafe.core.interfaces.ITask;
@@ -50,7 +50,7 @@ package st.crexi.as3.framework.cafe.core
 				
 				if (AbstTask(task).$isStarted) continue;
 				if (task.dependencies) {
-					for each(var request:IRequest in IDependency(task.dependencies).tasks) {
+					for each(var request:IRequest in IDependencies(task.dependencies).tasks) {
 						if (!request.isEnded) isWait = true;
 						if (isWait) break;
 					}
@@ -115,11 +115,11 @@ package st.crexi.as3.framework.cafe.core
 			
 			if (request.dependencyClass && !request.dependencies) {
 				AbstTask(request).$dependencies = new request.dependencyClass();
-				if (_order) IDependency(AbstTask(request).$dependencies)["_order"] = _order;				
+				if (_order) IDependencies(AbstTask(request).$dependencies)["_order"] = _order;				
 				AbstTask(request).$dependencies.initialize();
 			}
 			if (request.dependencies) {
-				for each(var task:ITask in IDependency(request.dependencies).taskList) {
+				for each(var task:ITask in IDependencies(request.dependencies).taskList) {
 					Kitchen.instance.register(request, task);
 				}
 			}
