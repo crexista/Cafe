@@ -62,6 +62,11 @@ package st.crexi.as3.framework.cafe.core.Event
 		}
 		
 		
+		/**
+		 * clone
+		 * @return 
+		 * 
+		 */
 		override public function clone():Event
 		{
 			return new WorkerEvent(type, worker);

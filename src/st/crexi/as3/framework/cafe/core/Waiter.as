@@ -1,10 +1,15 @@
 package st.crexi.as3.framework.cafe.core
 {
+	import flash.events.EventDispatcher;
+	import flash.events.IEventDispatcher;
+	
 	import st.crexi.as3.framework.cafe.core.Event.RequestEvent;
+	import st.crexi.as3.framework.cafe.core.Event.WaiterEvent;
 	import st.crexi.as3.framework.cafe.core.interfaces.IDependencies;
 	import st.crexi.as3.framework.cafe.core.interfaces.IOrder;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
 	import st.crexi.as3.framework.cafe.core.interfaces.ITask;
+	import st.crexi.as3.framework.cafe.utils.Stock;
 
 	/**
 	 * Orderを受けとり, Orderにリストアップされたrequestをすべて実行します<br/>
@@ -33,10 +38,21 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		private var _order:IOrder;
 		
-		
+		/**
+		 * taskが入った配列です
+		 */		
 		private var _tasks:Array;
 		
 		
+		/**
+		 * waiterの進行状況を教えるIEventDispatcherです
+		 */		
+		private var _notifier:IEventDispatcher
+		
+		/**
+		 * 
+		 */		
+		private var _stock:Stock;
 		
 		/**
 		 * Waiterが入れられたOrderの実行をスタートします
@@ -58,6 +74,7 @@ package st.crexi.as3.framework.cafe.core
 				
 				if (isWait) continue;
 				task.notifier.addEventListener(RequestEvent.COMPLETE, onComplete);
+				_stock.add(task, task);
 				task.execute();
 				AbstTask(task).$isStarted = true;
 
@@ -65,11 +82,15 @@ package st.crexi.as3.framework.cafe.core
 		}
 		
 		
+		/**
+		 * 一つ一つのTaskが終了したら呼ばれます
+		 * @param event
+		 * 
+		 */		
 		protected function onComplete(event:RequestEvent):void
 		{
 			var tasks:Vector.<ITask> = Kitchen.instance.getTasks(event.request);
 			var isWait:Boolean = false;
-			
 			
 			
 			for each(var task:ITask in tasks) {
@@ -77,6 +98,7 @@ package st.crexi.as3.framework.cafe.core
 				for each(var request:IRequest in task.dependencies) {
 					if (!request.isEnded) isWait = true;
 					if (isWait) break;
+					_stock.del(task);
 				}
 				if (isWait) continue;
 				
@@ -87,6 +109,19 @@ package st.crexi.as3.framework.cafe.core
 				task.execute();
 				AbstTask(task).$isStarted = true;
 			}
+			
+			if (_stock.length == 0) notifier.dispatchEvent(new WaiterEvent(WaiterEvent.ALL_COMPLETE));
+		}
+		
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */		
+		public function get notifier():IEventDispatcher
+		{
+			return _notifier;
 		}
 		
 		
@@ -137,8 +172,10 @@ package st.crexi.as3.framework.cafe.core
 		public function Waiter(tasks:Array, order:IOrder = null)
 		{			
 			_order = order;
-			_tasks =tasks;
-
+			_tasks = tasks;
+			_stock = new Stock;
+			
+			_notifier = new EventDispatcher();
 			for each(var request:ITask in tasks) {
 				analyzeRequest(request);
 			}
