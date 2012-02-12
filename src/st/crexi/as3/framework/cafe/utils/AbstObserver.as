@@ -10,7 +10,7 @@ package st.crexi.as3.framework.cafe.utils
 	 * @author crexista
 	 * 
 	 */	
-	public class AbstractObserver
+	public class AbstObserver
 	{
 		
 		
@@ -80,7 +80,7 @@ package st.crexi.as3.framework.cafe.utils
 		 * コンストラクタです
 		 * 
 		 */		
-		public function AbstractObserver() 
+		public function AbstObserver() 
 		{
 			_handlers = new Object;
 		}

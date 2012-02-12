@@ -14,7 +14,7 @@ package st.crexi.as3.framework.cafe.utils
 	 * @author crexista
 	 * 
 	 */
-	public class APIObserver extends AbstractObserver implements IObserver
+	public class APIObserver extends AbstObserver implements IObserver
 	{
 		private var _urlLoader:URLLoader;
 		private var _urlReq:URLRequest;

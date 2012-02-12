@@ -31,7 +31,8 @@ package st.crexi.as3.framework.cafe.core
 			_getRequests = function(krass:Class, arg:* = null):Object
 			{
 				if (!requestListDic[krass]) {
-					requestListDic[krass] = new krass(arg);
+					if (!args) requestListDic[krass] = new krass();
+					else requestListDic[krass] = new krass(arg);
 					
 				}
 				

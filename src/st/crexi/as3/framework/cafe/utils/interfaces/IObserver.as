@@ -24,16 +24,10 @@ package st.crexi.as3.framework.cafe.utils.interfaces
 		 * 
 		 */		
 		function get eventTarget():IEventDispatcher;
-		
-		/**
-		 * 
-		 * @param value
-		 * 
-		 */		
-		function set paramater(value:*):void;
-		
-		
-		
+
+
+
+
 		/**
 		 * 
 		 * @return 
