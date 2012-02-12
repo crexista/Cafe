@@ -88,6 +88,11 @@ package st.crexi.as3.framework.cafe.core
 			return _requests;
 		}
 		
+		final public function get requestArray():Array
+		{
+			return _requestArray;
+		}
+		
 		
 		/**
 		 * orderをスタートさせます
@@ -95,7 +100,7 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		final public function start():void
 		{
-			_waiter = new Waiter(_requestArray);
+			_waiter = new Waiter(_requestArray, IOrder(this));
 			_waiter.start();
 		}
 		

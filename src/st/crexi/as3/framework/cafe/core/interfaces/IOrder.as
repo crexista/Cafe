@@ -25,6 +25,14 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		 * 
 		 */
 		function get requestList():Object;
+		
+		
+		/**
+		 * reqestリストを配列形式にして返します
+		 * @return 
+		 * 
+		 */		
+		function get requestArray():Array;
 
 		
 		/**
@@ -32,6 +40,25 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		 * @return 
 		 * 
 		 */		
-		function get requestListClass():Class
+		function get requestListClass():Class;
+		
+		
+		
+		/**
+		 * このクラスがインスタンスがsingletonかどうかです.<br>
+		 * このパラメータがtrueの時、このクラスをnewしても内部のrequestlistオブジェクトの単一性は保証されます
+		 * @return 
+		 * 
+		 */		
+		function get isSingleton():Boolean;
+		
+		
+		
+		/**
+		 * 
+		 * 
+		 */		
+		function start():void;
+			
 	}
 }

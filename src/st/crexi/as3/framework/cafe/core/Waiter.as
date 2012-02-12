@@ -115,6 +115,7 @@ package st.crexi.as3.framework.cafe.core
 			
 			if (request.dependencyClass && !request.dependencies) {
 				AbstTask(request).$dependencies = new request.dependencyClass();
+				if (_order) IDependency(AbstTask(request).$dependencies)["_order"] = _order;				
 				AbstTask(request).$dependencies.initialize();
 			}
 			if (request.dependencies) {
@@ -133,9 +134,9 @@ package st.crexi.as3.framework.cafe.core
 		 * @param order
 		 * 
 		 */		
-		public function Waiter(tasks:Array)
+		public function Waiter(tasks:Array, order:IOrder = null)
 		{			
-			//_order = order;
+			_order = order;
 			_tasks =tasks;
 
 			for each(var request:ITask in tasks) {

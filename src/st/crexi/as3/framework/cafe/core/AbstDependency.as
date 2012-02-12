@@ -25,6 +25,11 @@ package st.crexi.as3.framework.cafe.core
 		
 		/**
 		 * 
+		 */		
+		internal var _order:*;
+		
+		/**
+		 * 
 		 * 
 		 */		
 		public function AbstDependency()
@@ -42,12 +47,28 @@ package st.crexi.as3.framework.cafe.core
 		
 		/**
 		 * 
+		 * @return 
+		 * 
+		 */		
+		final public function get order():*
+		{
+			return _order;
+		}
+		
+		
+		/**
+		 * 
 		 * @param event
 		 * 
 		 */		
 		final protected function onChange(event:PropertyChangeEvent):void
 		{
 			if (event.oldValue) throw new Error("既にtaskクラスは初期化されています");
+			
+			if (event.property == "order"){
+				_order = event.newValue;
+				return;
+			}				
 			_taskList[event.property] = event.newValue;
 			_tasks.push(event.newValue);
 		}
@@ -58,7 +79,7 @@ package st.crexi.as3.framework.cafe.core
 		 * @return 
 		 * 
 		 */		
-		final public function get tasks():Array
+		public function get tasks():Array
 		{
 			return _tasks;
 		}

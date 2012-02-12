@@ -38,7 +38,7 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		 * @return 
 		 * 
 		 */		
-		function get errorEventTypes():String;
+		function get errorEventTypes():Array;
 		
 		
 		/**
