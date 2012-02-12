@@ -38,7 +38,7 @@ package st.crexi.as3.framework.cafe.core
 				return requestListDic[krass];
 			};
 
-			return _getRequests(klass);
+			return _getRequests(klass, args);
 		};
 		
 		
