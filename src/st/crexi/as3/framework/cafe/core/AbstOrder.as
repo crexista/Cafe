@@ -55,6 +55,9 @@ package st.crexi.as3.framework.cafe.core
 		private var _requestList:Object;
 		
 		
+		private var _requestArray:Array;
+		
+		
 		/**
 		 * このorderを担当するWaiterオブジェクトです 
 		 */		
@@ -71,6 +74,7 @@ package st.crexi.as3.framework.cafe.core
 		{
 			return _requestList;
 		}
+		
 		
 		
 		
@@ -91,7 +95,7 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		final public function start():void
 		{
-			_waiter = new Waiter(IOrder(this));
+			_waiter = new Waiter(_requestArray);
 			_waiter.start();
 		}
 		
@@ -106,10 +110,12 @@ package st.crexi.as3.framework.cafe.core
 			var props:Object;
 			_requests = _getRequests(iOrder.requestListClass);
 			_requestList = new Object;
+			_requestArray = new Array();
 			props = ReflectionUtil.instance.getEnumbleInstanceObject(_requests);
 			
 			for (var name:String in props) {
 				_requestList[name] = _requests[name];
+				_requestArray.push(_requests[name]);
 			}
 
 			

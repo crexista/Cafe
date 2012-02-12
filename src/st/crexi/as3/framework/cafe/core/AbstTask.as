@@ -17,6 +17,12 @@ package st.crexi.as3.framework.cafe.core
 		internal var $isEnded:Boolean = false;
 		
 		
+		/**
+		 * このタスクが依存しているタスクを列挙したクラスインスタンスです
+		 */		
+		internal var $dependencies:*
+		
+		
 		private var _eventDispatcer:IEventDispatcher;
 		
 		
@@ -46,6 +52,17 @@ package st.crexi.as3.framework.cafe.core
 		final public function get isEnded():Boolean
 		{
 			return $isEnded;
+		}
+		
+		
+		/**
+		 * このタスクが依存しているタスクを列挙したクラスインスタンスです
+		 * @return 
+		 * 
+		 */		
+		final public function get dependencies():*
+		{
+			return $dependencies;
 		}
 		
 		

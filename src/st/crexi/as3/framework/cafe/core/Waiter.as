@@ -1,6 +1,7 @@
 package st.crexi.as3.framework.cafe.core
 {
 	import st.crexi.as3.framework.cafe.core.Event.RequestEvent;
+	import st.crexi.as3.framework.cafe.core.interfaces.IDependency;
 	import st.crexi.as3.framework.cafe.core.interfaces.IOrder;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
 	import st.crexi.as3.framework.cafe.core.interfaces.ITask;
@@ -33,6 +34,9 @@ package st.crexi.as3.framework.cafe.core
 		private var _order:IOrder;
 		
 		
+		private var _tasks:Array;
+		
+		
 		
 		/**
 		 * Waiterが入れられたOrderの実行をスタートします
@@ -40,15 +44,16 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		public function start():void
 		{
-			var obj:Object = _order.requestList;
-			for each(var task:ITask in _order.requestList) {				
+			
+			for each(var task:ITask in _tasks) {
 				var isWait:Boolean = false;
 				
 				if (AbstTask(task).$isStarted) continue;
-				
-				for each(var request:IRequest in task.dependencies) {
-					if (!request.isEnded) isWait = true;
-					if (isWait) break;
+				if (task.dependencies) {
+					for each(var request:IRequest in IDependency(task.dependencies).tasks) {
+						if (!request.isEnded) isWait = true;
+						if (isWait) break;
+					}
 				}
 				
 				if (isWait) continue;
@@ -108,8 +113,12 @@ package st.crexi.as3.framework.cafe.core
 		{			
 			var tasks:Vector.<ITask> = new Vector.<ITask>;			
 			
+			if (request.dependencyClass && !request.dependencies) {
+				AbstTask(request).$dependencies = new request.dependencyClass();
+				AbstTask(request).$dependencies.initialize();
+			}
 			if (request.dependencies) {
-				for each(var task:ITask in request.dependencies) {
+				for each(var task:ITask in IDependency(request.dependencies).taskList) {
 					Kitchen.instance.register(request, task);
 				}
 			}
@@ -124,11 +133,12 @@ package st.crexi.as3.framework.cafe.core
 		 * @param order
 		 * 
 		 */		
-		public function Waiter(order:IOrder)
+		public function Waiter(tasks:Array)
 		{			
-			_order = order;
+			//_order = order;
+			_tasks =tasks;
 
-			for each(var request:ITask in order.requestList) {
+			for each(var request:ITask in tasks) {
 				analyzeRequest(request);
 			}
 		}

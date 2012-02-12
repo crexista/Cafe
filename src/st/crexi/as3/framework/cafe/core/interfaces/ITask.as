@@ -37,12 +37,22 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		function get isEnded():Boolean
 		
 		/**
-		 * このタスクが依存しているIRequestオブジェクトが格納されたVector
+		 * このタスクが依存している他タスクを列挙したIDependencyの実装クラスのインスタンスです
+		 * 実装側で[Bindable] pulic function set dependencies(value:Dependacy):void{}とやる必要があります
 		 * 
 		 * @return 
 		 * 
 		 */		
-		function get dependencies():Array; /*Vector.<IRequest>*/
+		function get dependencies():*;
+		
+		
+		
+		/**
+		 * このタスクが依存している他タスクを列挙したIDependencyの実装クラスのオブジェクトです
+		 * @return 
+		 * 
+		 */		
+		function get dependencyClass():Class;
 		
 		
 		/**

@@ -17,20 +17,6 @@ package st.crexi.as3.framework.cafe.core.interfaces
 	{
 		
 
-		
-		
-		
-		/**
-		 * Requestを実行する際に引数、パラメータが必要となる場合は
-		 * このインターフェースを実装する際に[Bindable]タグをつけたsetterを用意し、
-		 * そのsetter内で処理を書きます
-		 * 
-		 * @return 
-		 * 
-		 */		
-		function set arguments(value:*):void;
-		
-
 
 		
 		/**
