@@ -10,7 +10,7 @@ package st.crexi.as3.framework.cafe.core
 	 * @author crexista
 	 * 
 	 */	
-	public class AbstDependency
+	public class AbstDependencies
 	{
 		
 		/**
@@ -32,7 +32,7 @@ package st.crexi.as3.framework.cafe.core
 		 * 
 		 * 
 		 */		
-		public function AbstDependency()
+		public function AbstDependencies()
 		{			
 			try {
 				this["addEventListener"](PropertyChangeEvent.PROPERTY_CHANGE, onChange)
@@ -43,7 +43,6 @@ package st.crexi.as3.framework.cafe.core
 			_taskList = new Object();
 			_tasks = new Array();
 		}
-		
 		
 		/**
 		 * 

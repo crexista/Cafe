@@ -5,7 +5,7 @@ package st.crexi.as3.framework.cafe.core.interfaces
 	 * @author crexista
 	 * 
 	 */	
-	public interface IDependency
+	public interface IDependencies
 	{
 
 		/**

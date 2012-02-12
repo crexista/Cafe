@@ -53,12 +53,15 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		function get isSingleton():Boolean;
 		
 		
+
+		
+		
 		
 		/**
 		 * 
 		 * 
 		 */		
-		function start():void;
+		function start(arguments:*):void;
 			
 	}
 }

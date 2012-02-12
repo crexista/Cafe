@@ -23,15 +23,15 @@ package st.crexi.as3.framework.cafe.core
 		 * requestクラスをキーとしてrequestそのものをかえす関数です
 		 * 
 		 */
-		private static var _getRequests:Function = function(klass:Class):Object
+		private static var _getRequests:Function = function(klass:Class, args:* = null):Object
 		{
 		
 			var requestListDic:Dictionary = new Dictionary;
 			
-			_getRequests = function(krass:Class):Object
+			_getRequests = function(krass:Class, arg:* = null):Object
 			{
 				if (!requestListDic[krass]) {
-					requestListDic[krass] = new krass();
+					requestListDic[krass] = new krass(arg);
 					
 				}
 				
@@ -64,6 +64,9 @@ package st.crexi.as3.framework.cafe.core
 		private var _waiter:Waiter;
 		
 		
+		private var _arguments:*
+		
+		
 		
 		/**
 		 * requestのリストをかえす
@@ -74,8 +77,6 @@ package st.crexi.as3.framework.cafe.core
 		{
 			return _requestList;
 		}
-		
-		
 		
 		
 		/**
@@ -94,12 +95,16 @@ package st.crexi.as3.framework.cafe.core
 		}
 		
 		
+		
+		
 		/**
 		 * orderをスタートさせます
 		 * 
 		 */		
-		final public function start():void
+		final public function start(arguments:*):void
 		{
+			_arguments = arguments;
+			requestAnalyze();
 			_waiter = new Waiter(_requestArray, IOrder(this));
 			_waiter.start();
 		}
@@ -113,7 +118,7 @@ package st.crexi.as3.framework.cafe.core
 		{
 			var iOrder:IOrder = this as IOrder;
 			var props:Object;
-			_requests = _getRequests(iOrder.requestListClass);
+			_requests = _getRequests(iOrder.requestListClass, _arguments);
 			_requestList = new Object;
 			_requestArray = new Array();
 			props = ReflectionUtil.instance.getEnumbleInstanceObject(_requests);
@@ -135,7 +140,7 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		public function AbstOrder()
 		{
-			requestAnalyze();
+			//requestAnalyze();
 		}
 	}
 }
