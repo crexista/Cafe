@@ -59,15 +59,15 @@ package st.crexi.as3.framework.cafe.core
 		{
 			return _result;
 		}
-		
-		
 
-		
-				
+
+
+
+
 		/**
 		 * request処理を実行します
 		 * 
-		 */		
+		 */
 		final public function execute():void
 		{
 			if (_worker) {
@@ -82,8 +82,8 @@ package st.crexi.as3.framework.cafe.core
 			_worker.start();
 		}
 
-				
-		
+
+
 		protected function onComplete(event:Event):void
 		{
 			_result = WorkerEvent(event).worker.result;

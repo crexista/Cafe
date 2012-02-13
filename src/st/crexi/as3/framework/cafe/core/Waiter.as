@@ -7,6 +7,7 @@ package st.crexi.as3.framework.cafe.core
 	import st.crexi.as3.framework.cafe.core.Event.WaiterEvent;
 	import st.crexi.as3.framework.cafe.core.interfaces.IDependencies;
 	import st.crexi.as3.framework.cafe.core.interfaces.IOrder;
+	import st.crexi.as3.framework.cafe.core.interfaces.IProcess;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
 	import st.crexi.as3.framework.cafe.core.interfaces.ITask;
 	import st.crexi.as3.framework.cafe.utils.Stock;
@@ -21,7 +22,7 @@ package st.crexi.as3.framework.cafe.core
 	 * <li> startでOrder内すべてのrequestを実行 </li>
 	 * <li> startでOrder内すべてのrequest実行状況を監視する</li>
 	 * <li> onCompleteメソッドでrequestが終了したときのチェックを行う </li>
-	 * <li> requestを元に_tasksからITaskオブジェクトを取得して実行する </li>
+	 * <li> requestを元に_tasksからIProcessオブジェクトを取得して実行する </li>
 	 * 
 	 * <p>start()</p>
 	 * <p>onComplete()</p>
@@ -61,7 +62,7 @@ package st.crexi.as3.framework.cafe.core
 		public function start():void
 		{
 			
-			for each(var task:ITask in _tasks) {
+			for each(var task:IProcess in _tasks) {
 				var isWait:Boolean = false;
 				
 				if (AbstTask(task).$isStarted) continue;
@@ -73,9 +74,12 @@ package st.crexi.as3.framework.cafe.core
 				}
 				
 				if (isWait) continue;
+				
 				task.notifier.addEventListener(RequestEvent.COMPLETE, onComplete);
 				_stock.add(task, task);
-				task.execute();
+				task.initialize();
+				if (task is ITask) ITask(task).execute(this)
+				else IRequest(task).execute();
 				AbstTask(task).$isStarted = true;
 
 			}
@@ -89,13 +93,13 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		protected function onComplete(event:RequestEvent):void
 		{
-			var tasks:Vector.<ITask> = Kitchen.instance.getTasks(event.request);
+			var tasks:Vector.<IProcess> = Kitchen.instance.getTasks(event.request);
 			var isWait:Boolean = false;
 			
 			
-			for each(var task:ITask in tasks) {
+			for each(var task:IProcess in tasks) {
 				isWait = false;
-				for each(var request:IRequest in task.dependencies) {
+				for each(var request:IRequest in IDependencies(task.dependencies).tasks) {
 					if (!request.isEnded) isWait = true;
 					if (isWait) break;
 					_stock.del(task);
@@ -106,11 +110,26 @@ package st.crexi.as3.framework.cafe.core
 					task.notifier.addEventListener(RequestEvent.COMPLETE, onComplete);
 				}
 				
-				task.execute();
+				if (task is ITask) ITask(task).execute(this)
+				else IRequest(task).execute();
+				
 				AbstTask(task).$isStarted = true;
 			}
 			
 			if (_stock.length == 0) notifier.dispatchEvent(new WaiterEvent(WaiterEvent.ALL_COMPLETE));
+		}
+		
+		
+		/**
+		 * 処理を止めます。
+		 * このメソッドを使うとorderで実行されているすべての処理がcancelされます
+		 * 
+		 * TODO 実装
+		 * 
+		 */		
+		public function cancel():void
+		{
+			
 		}
 		
 		
@@ -123,18 +142,7 @@ package st.crexi.as3.framework.cafe.core
 		{
 			return _notifier;
 		}
-		
-		
-		/**
-		 * requestの終了時に行われるTaskを追加する
-		 * @param request
-		 * @param task
-		 * 
-		 */		
-		public function append(request:IRequest, task:ITask):void
-		{			
-			Kitchen.instance.register(request, task);
-		}
+
 
 
 		/**
@@ -144,9 +152,9 @@ package st.crexi.as3.framework.cafe.core
 		 * @return 
 		 * 
 		 */		
-		protected function analyzeRequest(request:ITask):Vector.<ITask>
+		protected function analyzeRequest(request:IProcess):Vector.<IProcess>
 		{			
-			var tasks:Vector.<ITask> = new Vector.<ITask>;			
+			var tasks:Vector.<IProcess> = new Vector.<IProcess>;			
 			
 			if (request.dependencyClass && !request.dependencies) {
 				AbstTask(request).$dependencies = new request.dependencyClass();
@@ -154,7 +162,7 @@ package st.crexi.as3.framework.cafe.core
 				AbstTask(request).$dependencies.initialize();
 			}
 			if (request.dependencies) {
-				for each(var task:ITask in IDependencies(request.dependencies).taskList) {
+				for each(var task:IProcess in IDependencies(request.dependencies).taskList) {
 					Kitchen.instance.register(request, task);
 				}
 			}
@@ -176,7 +184,7 @@ package st.crexi.as3.framework.cafe.core
 			_stock = new Stock;
 			
 			_notifier = new EventDispatcher();
-			for each(var request:ITask in tasks) {
+			for each(var request:IProcess in tasks) {
 				analyzeRequest(request);
 			}
 		}

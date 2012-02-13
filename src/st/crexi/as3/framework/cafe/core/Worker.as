@@ -111,10 +111,21 @@ package st.crexi.as3.framework.cafe.core
 		 * @param result 処理の結果です
 		 * 
 		 */		
-		public function end(result:* = null):void
+		final public function end(result:* = null):void
 		{
 			_result = result;
 			this.notifier.dispatchEvent(new WorkerEvent(WorkerEvent.COMPLETE, this));
+		}
+		
+		
+		
+		/**
+		 * このタスクに続く処理を拒否します
+		 * 
+		 */		
+		final public function cancel():void
+		{
+			
 		}
 
 		

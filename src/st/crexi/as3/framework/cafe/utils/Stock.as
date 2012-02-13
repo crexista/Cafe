@@ -7,7 +7,7 @@ package st.crexi.as3.framework.cafe.utils
 	 * Dictionaryは自分にどれだけのデータがはいっているかを返すことができないため、
 	 * lengthメソッドで取得できるようになっています
 	 * 
-	 * @author kaoru_shibasaki
+	 * @author kaora_crexista
 	 * 
 	 */	
 	public class Stock

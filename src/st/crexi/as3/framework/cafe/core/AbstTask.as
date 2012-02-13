@@ -2,6 +2,8 @@ package st.crexi.as3.framework.cafe.core
 {
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
+	
+	import st.crexi.as3.framework.cafe.core.interfaces.IProcess;
 
 	public class AbstTask
 	{
@@ -18,12 +20,21 @@ package st.crexi.as3.framework.cafe.core
 		
 		
 		/**
+		 * このクラスの処理を行っているworkerです
+		 */		
+		internal var $worker:Worker;
+		
+		
+		/**
 		 * このタスクが依存しているタスクを列挙したクラスインスタンスです
 		 */		
 		internal var $dependencies:*
 		
 		
 		private var _eventDispatcer:IEventDispatcher;
+		
+		
+		
 		
 		
 		final public function get notifier():IEventDispatcher
@@ -69,6 +80,7 @@ package st.crexi.as3.framework.cafe.core
 		public function AbstTask()
 		{
 			_eventDispatcer = new EventDispatcher;
+
 		}
 	}
 }

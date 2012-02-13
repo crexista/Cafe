@@ -3,6 +3,7 @@ package st.crexi.as3.framework.cafe.core
 	import flash.errors.IllegalOperationError;
 	import flash.utils.Dictionary;
 	
+	import st.crexi.as3.framework.cafe.core.interfaces.IProcess;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
 	import st.crexi.as3.framework.cafe.core.interfaces.ITask;
 
@@ -53,9 +54,9 @@ package st.crexi.as3.framework.cafe.core
 		 * @param task
 		 * 
 		 */		
-		public function register(request:ITask, task:ITask):void
+		public function register(request:IProcess, task:IProcess):void
 		{
-			if (!_tasks[task]) _tasks[task] = new Vector.<ITask>;
+			if (!_tasks[task]) _tasks[task] = new Vector.<IProcess>;
 			_tasks[task].push(request);
 		}
 		
@@ -66,7 +67,7 @@ package st.crexi.as3.framework.cafe.core
 		 * @return 
 		 * 
 		 */		
-		public function getTasks(value:ITask):Vector.<ITask>
+		public function getTasks(value:IProcess):Vector.<IProcess>
 		{
 			return _tasks[value];
 		}

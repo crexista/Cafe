@@ -13,7 +13,7 @@ package st.crexi.as3.framework.cafe.core.interfaces
 	 * @author crexista
 	 * 
 	 */	
-	public interface IRequest extends ITask
+	public interface IRequest extends IProcess
 	{
 		
 
@@ -37,6 +37,13 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		 * @return 
 		 * 
 		 */		
-		function get result():*
+		function get result():*;
+		
+		
+		/**
+		 * 
+		 * 
+		 */		
+		function execute():void;
 	}
 }
