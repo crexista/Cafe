@@ -18,10 +18,28 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		
 		
 		/**
-		 * Processを初期化します
+		 * 処理の初期化を行います<br/>
+		 * 起動時に1回しか動きません<br/>
 		 * 
 		 */		
 		function initialize():void;
+
+
+		/**
+		 * 処理に必要なパラメータを構築します<br/>
+		 * この処理はrequestが呼ばれるたびに実行されます
+		 * 
+		 */
+		function setup():void;
+		
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */		
+		function get initialized():Boolean;
+		
 		
 		
 		/**

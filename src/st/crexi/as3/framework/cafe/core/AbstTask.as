@@ -34,7 +34,13 @@ package st.crexi.as3.framework.cafe.core
 		private var _eventDispatcer:IEventDispatcher;
 		
 		
+		internal var $initialized:Boolean
 		
+		public function get initialized():Boolean
+		{
+			return $initialized;
+		}
+
 		
 		
 		final public function get notifier():IEventDispatcher

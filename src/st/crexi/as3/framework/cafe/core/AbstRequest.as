@@ -59,10 +59,8 @@ package st.crexi.as3.framework.cafe.core
 		{
 			return _result;
 		}
-
-
-
-
+		
+		
 
 		/**
 		 * request処理を実行します
