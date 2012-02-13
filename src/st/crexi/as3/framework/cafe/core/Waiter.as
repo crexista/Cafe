@@ -77,12 +77,8 @@ package st.crexi.as3.framework.cafe.core
 				
 				task.notifier.addEventListener(RequestEvent.COMPLETE, onComplete);
 				_stock.add(task, task);
-				task.initialize();
-				task.setup();
-				if (task is ITask) ITask(task).execute(this)
-				else IRequest(task).execute();
-				AbstTask(task).$isStarted = true;
-
+				
+				run(task);
 			}
 		}
 		
@@ -96,7 +92,7 @@ package st.crexi.as3.framework.cafe.core
 		{
 			var tasks:Vector.<IProcess> = Kitchen.instance.getTasks(event.request);
 			var isWait:Boolean = false;
-			
+			trace(event.request);
 			
 			for each(var task:IProcess in tasks) {
 				isWait = false;
@@ -111,16 +107,29 @@ package st.crexi.as3.framework.cafe.core
 					task.notifier.addEventListener(RequestEvent.COMPLETE, onComplete);
 				}
 				
-				task.initialize();
-				task.setup();
-				
-				if (task is ITask) ITask(task).execute(this)
-				else IRequest(task).execute();
-				
-				AbstTask(task).$isStarted = true;
+				run(task);
+
 			}
 			
 			if (_stock.length == 0) notifier.dispatchEvent(new WaiterEvent(WaiterEvent.ALL_COMPLETE));
+		}
+		
+		
+		protected function run(process:IProcess):void
+		{
+			if (!AbstTask(process).$initialized) {
+				process.initialize();
+			}
+			else {
+				AbstTask(process).$initialized = true;
+			}
+			
+			process.setup();
+			
+			if (process is ITask) ITask(process).execute(this)
+			else IRequest(process).execute();
+			
+			AbstTask(process).$isStarted = true;			
 		}
 		
 		
