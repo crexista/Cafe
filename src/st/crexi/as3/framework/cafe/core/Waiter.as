@@ -78,6 +78,7 @@ package st.crexi.as3.framework.cafe.core
 				task.notifier.addEventListener(RequestEvent.COMPLETE, onComplete);
 				_stock.add(task, task);
 				task.initialize();
+				task.setup();
 				if (task is ITask) ITask(task).execute(this)
 				else IRequest(task).execute();
 				AbstTask(task).$isStarted = true;
@@ -112,7 +113,7 @@ package st.crexi.as3.framework.cafe.core
 				
 				if (task is ITask) ITask(task).execute(this)
 				else IRequest(task).execute();
-				
+				task.setup();
 				AbstTask(task).$isStarted = true;
 			}
 			
@@ -157,10 +158,9 @@ package st.crexi.as3.framework.cafe.core
 			var tasks:Vector.<IProcess> = new Vector.<IProcess>;			
 			
 			if (request.dependencyClass && !request.dependencies) {
-				trace(request.dependencyClass);
+				
 				AbstTask(request).$dependencies = new request.dependencyClass();
-				if (_order) IDependencies(AbstTask(request).$dependencies)["$order"] = _order;
-				trace(AbstTask(request).$dependencies);
+				if (_order) IDependencies(AbstTask(request).$dependencies)["$order"] = _order;				
 				AbstTask(request).$dependencies.$initialize();
 			}
 			if (request.dependencies) {
