@@ -157,12 +157,14 @@ package st.crexi.as3.framework.cafe.core
 			var tasks:Vector.<IProcess> = new Vector.<IProcess>;			
 			
 			if (request.dependencyClass && !request.dependencies) {
+				trace(request.dependencyClass);
 				AbstTask(request).$dependencies = new request.dependencyClass();
-				if (_order) IDependencies(AbstTask(request).$dependencies)["_order"] = _order;				
-				AbstTask(request).$dependencies.initialize();
+				if (_order) IDependencies(AbstTask(request).$dependencies)["$order"] = _order;
+				trace(AbstTask(request).$dependencies);
+				AbstTask(request).$dependencies.$initialize();
 			}
 			if (request.dependencies) {
-				for each(var task:IProcess in IDependencies(request.dependencies).taskList) {
+				for each(var task:IProcess in IDependencies(request.dependencies).tasks) {
 					Kitchen.instance.register(request, task);
 				}
 			}

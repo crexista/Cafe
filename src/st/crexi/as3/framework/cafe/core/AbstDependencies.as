@@ -5,6 +5,9 @@ package st.crexi.as3.framework.cafe.core
 	
 	import mx.events.PropertyChangeEvent;
 	
+	import st.crexi.as3.framework.cafe.core.interfaces.IDependencies;
+	import st.crexi.as3.framework.cafe.utils.ReflectionUtil;
+	
 	/**
 	 * taskクラスが依存している別タスクを列挙するクラスの抽象クラスです
 	 * @author crexista
@@ -26,22 +29,31 @@ package st.crexi.as3.framework.cafe.core
 		/**
 		 * 
 		 */		
-		internal var _order:*;
+		internal var $order:*;
 		
 		/**
 		 * 
 		 * 
 		 */		
 		public function AbstDependencies()
-		{			
-			try {
-				this["addEventListener"](PropertyChangeEvent.PROPERTY_CHANGE, onChange)
-			}
-			catch (error:Error) {
-				throw new Error("このクラスはBindableを使ってください");
-			}
-			_taskList = new Object();
+		{
+
+		}
+		
+		internal function $initialize():void
+		{
+			var props:Object;
+			
+			IDependencies(this).initialize();
+			_taskList = new Object;
 			_tasks = new Array();
+			props = ReflectionUtil.instance.getEnumbleInstanceObject(this);
+			
+			for (var name:String in props) {
+				_taskList[name] = this[name];
+				_tasks.push(this[name]);
+			}
+			
 		}
 		
 		/**
@@ -51,7 +63,7 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		final public function get order():*
 		{
-			return _order;
+			return $order;
 		}
 		
 		
@@ -65,7 +77,7 @@ package st.crexi.as3.framework.cafe.core
 			if (event.oldValue) throw new Error("既にtaskクラスは初期化されています");
 			
 			if (event.property == "order"){
-				_order = event.newValue;
+				$order = event.newValue;
 				return;
 			}				
 			_taskList[event.property] = event.newValue;
