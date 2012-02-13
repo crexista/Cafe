@@ -111,9 +111,12 @@ package st.crexi.as3.framework.cafe.core
 					task.notifier.addEventListener(RequestEvent.COMPLETE, onComplete);
 				}
 				
+				task.initialize();
+				task.setup();
+				
 				if (task is ITask) ITask(task).execute(this)
 				else IRequest(task).execute();
-				task.setup();
+				
 				AbstTask(task).$isStarted = true;
 			}
 			
