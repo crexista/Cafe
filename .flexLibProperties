@@ -8,6 +8,16 @@
     <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.ISyncProcess"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.IAsyncProcess"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.IProcess"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.IRequest2"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.IRecipe2"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.AbstRequest2"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.errors.HogeError"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.Worker2"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.Waiter2"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.RequestStatusType"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.Kitchen2"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.ImmutableObjectProxy"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.Event.ImmutableObjectEvent"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
