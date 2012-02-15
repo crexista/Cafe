@@ -15,11 +15,11 @@ package st.crexi.as3.framework.cafe.core.interfaces
 	{
 		
 		/**
-		 * 初期化済みかどうかを返します
+		 * initializeを一回だけ行うか否かを決定します
 		 * @return 
 		 * 
 		 */		
-		function get isInitialized():Boolean;
+		function get initOnlyOnce():Boolean;
 		
 		
 		
@@ -98,7 +98,9 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		 * @param value constructorで入れられた引数が入ります
 		 * 
 		 */
-		function setup(isInitialized:Boolean, value:*):void;
+		function get initialize():*;
+		
+		function set initialize(value:*):void;
 		
 		
 		/**

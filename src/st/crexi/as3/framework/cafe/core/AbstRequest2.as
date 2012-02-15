@@ -48,20 +48,14 @@ package st.crexi.as3.framework.cafe.core
 		/**
 		 * 
 		 */		
-		private var _result:*;
+		internal var $result:*;
 		
 		
 		private var _notifier:IEventDispatcher
+		
+		
+		private var _isInitialize:Boolean;
 
-		/**
-		 * 初期化済みかどうかを返します
-		 * @return 
-		 * 
-		 */		
-		public function get isInitialized():Boolean
-		{			
-			return $isInitialized;
-		}
 
 		
 		/**
@@ -71,7 +65,7 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		public function get result():*
 		{
-			return _result;
+			return $result;
 		}
 		
 		
@@ -82,7 +76,7 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		public function get dependencies():*
 		{
-			initialize();
+			startup();
 			return $dependencies;
 		}
 		
@@ -120,12 +114,28 @@ package st.crexi.as3.framework.cafe.core
 		
 		
 		
+		
+		/**
+		 * 初期化に必要なパラメータを決めます
+		 * @return 
+		 * 
+		 */		
+		final public function get initialize():*
+		{
+			IRequest2(this).initialize = null;
+			return null;
+		}
+		
+		
+		
+		
+		
 		/**
 		 * Requestの準備を行います
 		 * 主にdependenciesのセットアップを行います
 		 * 
 		 */		
-		final protected function initialize():void
+		final protected function startup():void
 		{
 			if (!IRequest2(this).dependenciesClass || this.$dependencies) return;
 			
@@ -144,10 +154,10 @@ package st.crexi.as3.framework.cafe.core
 		}
 		
 		
-		protected function onResult(event:PropertyChangeEvent):void
+		protected function onChange(event:PropertyChangeEvent):void
 		{
-			if (event.property != "result") return;
-			_result = event.newValue;
+			if (event.property != "initialize") return;
+			$isInitialized = true;
 		}
 		
 		
@@ -161,7 +171,7 @@ package st.crexi.as3.framework.cafe.core
 			if (getQualifiedClassName(this) == "st.crexi.as3.framework.cafe.core::AbstRequest2") throw new HogeError(this, HogeError.NOT_EXTENDS_ERROR);
 			
 			try {
-				IEventDispatcher(this).addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onResult);
+				IEventDispatcher(this).addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onChange);
 			}
 			catch (error:Error) {
 				//TODO 後できちんとErrorクラスを作る

@@ -73,7 +73,7 @@ package st.crexi.as3.framework.cafe.core
 				_requestArr.push(request);
 				//getterでdependenciesの初期化を行っている
 				request.dependencies;
-				request.setup(false, AbstRequest2(request).$invokeArg);
+				request.initialize = AbstRequest2(request).$invokeArg;
 			}
 			
 			new Waiter2().start(_requestArr);

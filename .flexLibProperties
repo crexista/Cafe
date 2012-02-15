@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
-    <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.IDependency"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.Event.WaiterEvent"/>
     <classEntry path="st.crexi.as3.framework.cafe.utils.Stock"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.TaskRecipe"/>
@@ -17,10 +16,7 @@
     <classEntry path="st.crexi.as3.framework.cafe.core.Waiter2"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.RequestStatusType"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.Kitchen2"/>
-    <classEntry path="st.crexi.as3.framework.cafe.utils.ImmutableObjectProxy"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.Event.ImmutableObjectEvent"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.AbstOrder2"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.IOrder2"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

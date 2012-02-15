@@ -155,7 +155,7 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		public function end(value:*=null):void
 		{
-			if (value != null) _request[RESULT] = value;
+			if (value != null) AbstRequest2(_request).$result = value;
 			AbstRequest2(_request).$status = RequestStatusType.END;
 			_request.recipe.eventTarget.removeEventListener(_request.recipe.successEventType, _callBack);
 			_request.notifier.dispatchEvent(new RequestEvent2(RequestEvent2.COMPLETE, _request));
@@ -169,6 +169,10 @@ package st.crexi.as3.framework.cafe.core
 		 */
 		public function Worker2(request:IRequest2, waiter:Waiter2)
 		{
+			if (AbstRequest2(request).$isInitialized || request.initOnlyOnce) {
+				//TODO あとでErrorクラスを作る
+				throw new Error("requestの初期化がされていません、このrequestは初期化がひつようです");
+			}
 			_waiter = waiter;
 			_notifier = new EventDispatcher();
 			_request = request;
