@@ -11,6 +11,7 @@ package st.crexi.as3.framework.cafe.core
 	import st.crexi.as3.framework.cafe.core.errors.HogeError;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRecipe2;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest2;
+	import st.crexi.as3.framework.cafe.utils.ImmutableObjectProxy;
 	
 	
 	/**

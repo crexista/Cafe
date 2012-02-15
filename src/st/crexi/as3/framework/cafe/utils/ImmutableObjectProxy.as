@@ -1,4 +1,4 @@
-package st.crexi.as3.framework.cafe.core
+package st.crexi.as3.framework.cafe.utils
 {
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
