@@ -26,14 +26,18 @@ package st.crexi.as3.framework.cafe.utils
 		
 		private var _notifier:IEventDispatcher;
 		
+		
+		private var _target:* ;
+		
 		public function ImmutableObjectProxy(target:*, checkMethod:Function = null)
 		{
 			_obj = new Object;
 			_indexArr = new Array();
-			
+			//_target = target;
+			var hoge:Object = clone(target)
 			_notifier = new EventDispatcher();
 			
-			for (var key:String in clone(target)) {
+			for (var key:String in hoge) {
 				if (checkMethod != null) {
 					checkMethod.call(null, target[key]);
 				}
@@ -47,6 +51,12 @@ package st.crexi.as3.framework.cafe.utils
 		public function get notifier():IEventDispatcher
 		{
 			return _notifier;
+		}
+		
+		
+		override flash_proxy function callProperty(name:*, ...parameters):*
+		{
+			_target[name]();
 		}
 		
 		
@@ -85,8 +95,9 @@ package st.crexi.as3.framework.cafe.utils
 		}
 		
 		
-		protected function clone(arg:*):* {
+		protected static function clone(arg:*):* {
 			var b:ByteArray = new ByteArray();
+			
 			b.writeObject(arg);
 			b.position = 0;
 			return b.readObject();

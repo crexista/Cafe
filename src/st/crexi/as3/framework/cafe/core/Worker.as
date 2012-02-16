@@ -4,163 +4,254 @@ package st.crexi.as3.framework.cafe.core
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	
-	import st.crexi.as3.framework.cafe.core.Event.WorkerEvent;
+	import st.crexi.as3.framework.cafe.core.Event.RequestEvent;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRecipe;
+	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
+
 	
 	/**
-	 * Requestによって起動されるクラスです<br/>
-	 * RequestからRecipeを受け取り、それに従ってイベント処理を行います<br>
-	 * 
-	 * @author crexista
+	 * worker
+	 * @author kaora crexista
 	 * 
 	 */	
 	public class Worker
 	{
 		
 		/**
-		 * Workerの進行状況を伝えるEventDispatcherです
 		 * 
 		 */		
-		private var _info:IEventDispatcher;
+		private const RESULT:String = "result";
+		
 		
 		
 		/**
-		 * workerによって実行されるrequestです
 		 * 
 		 */		
+		private var _request:IRequest;
+		
+		
 		private var _recipe:IRecipe;
 		
 		
-		
 		/**
-		 * workerの処理の結果です
-		 */		
-		private var _result:*;
-		
-		
-		
-		/**
-		 * このworkerが既に動いているかどうかです
 		 * 
 		 */		
-		internal var $isStarted:Boolean = false;
+		private var _notifier:IEventDispatcher;
 		
 		
 		/**
-		 * このworkerの処理がすでに終わって止まっているかどうかです 
+		 * 
 		 */		
-		internal var $isEnded:Boolean = false;
+		private var _callBack:Function;
 		
 		
 		/**
-		 * Workerの進行状況を伝えるEventDispatcherのgetterです
+		 * 
+		 */		
+		private var _waiter:Waiter;
+		
+		
+		
+		public static function runArg(request:IRequest, argument:*):RequestArg
+		{
+			return new RequestArg(request, argument);
+		}
+		
+		
+		
+		/**
+		 * Requestの処理が終わったりしたらEventをなげるEventDispatcherです
 		 * @return 
 		 * 
 		 */		
 		public function get notifier():IEventDispatcher
 		{
-			return _info;
+			return _notifier;
 		}
 		
 		
 		/**
-		 * 処理の内容を返します
+		 * このworkerが担当しているrequestです
 		 * @return 
 		 * 
 		 */		
-		public function get recipe():IRecipe
+		public function get request():IRequest
 		{
-			return _recipe;
+			return _request;
 		}
 		
 		
 		/**
-		 * 処理の結果を返します
-		 * @return 
+		 * 
+		 * @param value
 		 * 
 		 */		
-		public function get result():*
+		protected function run():void
 		{
-			return _result;
-		}
-
-		
-		
-		
-		/**
-		 * requestから取得したrecipeを元に処理を行います
-		 * 
-		 */		
-		public function start():void
-		{
-			_recipe.observer.setHandler(_recipe.successEventType, onSuccess);
-			for each(var type:String in _recipe.errorEventTypes) {
-				_recipe.observer.setHandler(type, onError);
+			
+			
+			AbstRequest(_request).$status = RequestStatusType.INVOKING;
+			AbstRequest(_request).$isInitialized = true;
+			_recipe = _request.onReady();
+			if (!_recipe) {
+				_request.onSuccess(null, _waiter, this);
+				return;
+			}
+			if (!_recipe.eventTarget.hasEventListener(_recipe.successEventType)) {
+				_recipe.eventTarget.addEventListener(_recipe.successEventType, onSuccess(_recipe.eventTarget, _request));
 			}
 			
-			_recipe.observer.start();
-			
+			_recipe.start();
+		
 		}
 		
+		
+		
+		public function runWith(value:Vector.<RequestArg>):void
+		{
+			for each(var reqArg:RequestArg in value) {
+				//run(reqArg.request, reqArg.argument);
+			}
+		}
 		
 		
 		/**
-		 * 処理を終了させて、requestのステータスを終了にするためのメソッドです
-		 * 
-		 * 
-		 * @param result 処理の結果です
-		 * 
-		 */		
-		final public function end(result:* = null):void
-		{
-			_result = result;
-			this.notifier.dispatchEvent(new WorkerEvent(WorkerEvent.COMPLETE, this));
-		}
-		
-		
-		
-		/**
-		 * このタスクに続く処理を拒否します
+		 * recipeに描いてある予定通りsuccessEventが帰ってきたときに実行されるメソッドです
+		 * @param target
+		 * @param request
+		 * @return 
 		 * 
 		 */		
-		final public function cancel():void
+		protected function onSuccess(target:IEventDispatcher, request:IRequest):Function
 		{
+			var worker:Worker = this;
 			
-		}
+			var callBack:Function = function (event:Event):void
+			{
+				request.onSuccess(event, _waiter, worker);
+			};
+			_callBack = callBack;
+			return callBack;
 
-		
-		
-		/**
-		 * 処理が成功したときに呼ばれます
-		 * @param event
-		 * 
-		 */		
-		protected function onSuccess(event:Event):void
-		{
-			_recipe.onSuccess(event, this);
 		}
 		
-		
+
 		/**
-		 * 処理が失敗したときに呼ばれます
-		 * @param event
+		 * recipeに描いてある予定通りerrorEventが帰ってきたときに実行されるメソッドです
+		 * @param target
+		 * @param request
+		 * @return 
 		 * 
 		 */		
-		protected function onError(event:Event):void
+		protected function onError(target:IEventDispatcher, request:IRequest):Function
 		{			
-			_recipe.onError(event, this);
+			var worker:Worker = this;			
+			var callBack:Function = function (event:Event):void
+			{
+				request.onError(event, _waiter, worker);
+			};
+			
+			return callBack;
+
 		}
 
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */		
+		public function end(value:*=null):void
+		{
+			if (value != null) AbstRequest(_request).$result = value;
+			AbstRequest(_request).$status = RequestStatusType.END;
+			if (_recipe) _recipe.eventTarget.removeEventListener(_recipe.successEventType, _callBack);
+			_request.notifier.dispatchEvent(new RequestEvent(RequestEvent.COMPLETE, _request));
+		}
+		
 		
 		
 		/**
-		 * コンストラクタです 
+		 * requestが失敗したときに呼ばれるメソッドです
+		 * @param value
+		 * @return 
 		 * 
 		 */		
-		public function Worker(recipe:IRecipe)
+		public function abort(value:* = null):void
 		{
-			_info = new EventDispatcher();
-			_recipe = recipe;
+			if (value != null) AbstRequest(_request).$result = value;
+			AbstRequest(_request).$status = RequestStatusType.END;
+			if (_recipe) _recipe.eventTarget.removeEventListener(_recipe.successEventType, _callBack);
+			_request.notifier.dispatchEvent(new RequestEvent(RequestEvent.ABORT, _request));
+			
 		}
+		
+		
+		public function dispose():void
+		{
+			if (_recipe) _recipe.eventTarget.removeEventListener(_recipe.successEventType, _callBack);			
+		}
+
+
+		/**
+		 * コンストラクタです
+		 * @param request
+		 * 
+		 */
+		public function Worker(request:IRequest, waiter:Waiter)
+		{
+			_waiter = waiter;
+			_notifier = new EventDispatcher();
+			_request = request;
+			run();
+		}
+	}
+}
+
+
+
+
+import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
+
+
+class RequestArg
+{
+	
+	/**
+	 * 
+	 */	
+	private var _request:IRequest;
+	
+	/**
+	 * 
+	 */	
+	private var _argument:*;
+	
+
+	/**
+	 * 
+	 * @return 
+	 * 
+	 */
+	public function get request():IRequest
+	{
+		return _request;
+	}
+	
+	
+	/**
+	 * 
+	 * @return 
+	 * 
+	 */	
+	public function get argument():*
+	{
+		return _argument;
+	}
+	
+	
+	public function RequestArg(request:IRequest, argument:*) 
+	{
+		_request = request;
+		_argument = argument;
 	}
 }

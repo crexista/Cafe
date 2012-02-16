@@ -1,32 +1,17 @@
 package st.crexi.as3.framework.cafe.core.interfaces
 {
-	
-	import flash.events.Event;
-	
-	import st.crexi.as3.framework.cafe.core.Worker;
-	import st.crexi.as3.framework.cafe.utils.interfaces.IObserver;
-	
+	import flash.events.IEventDispatcher;
 
 	/**
-	 * リクエスト処理に必要となるデータ群のインターフェースです
-	 * 
-	 * 
-	 * @author crexista
+	 * APIへの接続ロジックをまとめたインターフェースです
+	 * @author kaora crexista
 	 * 
 	 */	
 	public interface IRecipe
 	{
-		/**
-		 * 
-		 * @return 
-		 * 
-		 */		
-		function get observer():IObserver;
-		
-		
 		
 		/**
-		 * 成功時に飛ぶEventのタイプです
+		 * 非同期処理が成功した時にeventTargetから飛んでくるEventTypeです
 		 * @return 
 		 * 
 		 */		
@@ -34,28 +19,37 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		
 		
 		/**
-		 * requestが失敗したときに飛ぶEventのタイプが詰まった配列です
+		 * 非同期処理が失敗したときにeventTargetから飛んでくるEventのtypeです.
+		 * errorEventTargetがnullでないときはerrorEventTargetから飛んでくるものを監視します
 		 * @return 
 		 * 
-		 */		
+		 */
 		function get errorEventTypes():Array;
 		
 		
 		/**
-		 * Request成功時の処理です
-		 * @param event
+		 * 非同期処理を行った際に、その経過を飛ばすeventTargetです
+		 * @return 
 		 * 
 		 */		
-		function onSuccess(event:Event, worker:Worker):void;
+		function get eventTarget():IEventDispatcher;
 		
 		
 		
 		/**
-		 * Request失敗時の処理です
-		 * @param event
+		 * 非同期処理を行った際に、その経過がErrorだったときにErrorのイベントを飛ばすeventTargetです 
+		 * @return 
 		 * 
 		 */		
-		function onError(event:Event, worker:Worker):void;
+		function get errorEventTarget():IEventDispatcher;
+
 		
+		
+		/**
+		 * 処理をスタートさせるメソッドです
+		 * @param value
+		 * 
+		 */		
+		function start():void;
 	}
 }

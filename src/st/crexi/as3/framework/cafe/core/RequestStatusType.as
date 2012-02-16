@@ -18,5 +18,7 @@ package st.crexi.as3.framework.cafe.core
 		 * 起動中のstatusです
 		 */		
 		public static const INVOKING:String = "invoking";
+		
+
 	}
 }

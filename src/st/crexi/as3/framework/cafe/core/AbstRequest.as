@@ -3,52 +3,60 @@ package st.crexi.as3.framework.cafe.core
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
+	import flash.utils.getQualifiedClassName;
 	
 	import mx.events.PropertyChangeEvent;
 	
-	import st.crexi.as3.framework.cafe.core.Event.RequestEvent;
-	import st.crexi.as3.framework.cafe.core.Event.WorkerEvent;
+	import st.crexi.as3.framework.cafe.core.Event.ImmutableObjectEvent;
+	import st.crexi.as3.framework.cafe.core.errors.HogeError;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRecipe;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
-	import st.crexi.as3.framework.cafe.core.interfaces.ITask;
+	import st.crexi.as3.framework.cafe.utils.ImmutableObjectProxy;
 	
 	
 	/**
-	 * RequestのAbstractクラスです<br/>
-	 * このクラス自体は処理そのものを行う事はしません<br/>
-	 * workerにRequestの処理内容のRecipeを受け渡し<br/>
-	 * workerを実行します
+	 * Requestの抽象クラスです
+	 * @author kaoru_shibasaki
 	 * 
-	 * workerが完了したら
-	 *
-	 * 
-	 * @author crexista
-	 * 
-	 */	
-	public class AbstRequest extends AbstTask
+	 */
+	public class AbstRequest
 	{
 		
+		/**
+		 * 
+		 */		
+		internal var $isInitialized:Boolean = false;
 		
 		/**
-		 * リクエストの結果がはいります　
+		 * 
 		 */		
-		private var _result:*;
+		internal var $invokeArg:*;
 		
 		
 		/**
-		 * 終了した事を伝えます
+		 * 
 		 */		
-		private var _eventSender:IEventDispatcher;
+		internal var $dependencies:*;
 		
 		
-	
 		/**
-		 * 実際にrequest処理を行うWorkerです
+		 * 
 		 */		
-		private var _worker:Worker
+		internal var $status:String;
+		
+		
+		/**
+		 * 
+		 */		
+		internal var $result:*;
+		
+		
+		private var _notifier:IEventDispatcher
+		
+		
+		private var _isInitialize:Boolean;
 
 
-		
 		
 		/**
 		 * Requestの結果を返します
@@ -57,49 +65,95 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		public function get result():*
 		{
-			return _result;
+			return $result;
 		}
 		
 		
-
 		/**
-		 * request処理を実行します
 		 * 
-		 */
-		final public function execute():void
+		 * @return 
+		 * 
+		 */		
+		public function get dependencies():*
 		{
-			if (_worker) {
-				_worker.notifier.removeEventListener(WorkerEvent.COMPLETE, onComplete);
-				_worker = null;
-				for each(var task:AbstTask in Kitchen.instance.getTasks(IRequest(this))) {
-					task.$isEnded = false;
-				}
+			startup();
+			return $dependencies;
+		}
+		
+		
+		/**
+		 * 処理の進行状況を返します
+		 * @return 
+		 * 
+		 */		
+		public function get status():String
+		{
+			return $status;
+		}
+		
+		
+		final public function get notifier():IEventDispatcher
+		{
+			return _notifier;
+		}
+		
+		
+		/**
+		 * このクラスのコンストラクタ代わりです.
+		 * newする時以外に呼ぶとerrorが飛びます
+		 * 
+		 * @param value
+		 * @return 
+		 * 
+		 */		
+		final public function constructor(value:*):IRequest
+		{
+			$invokeArg = value;
+			return IRequest(this);
+		}
+		
+		
+		
+		
+		
+		/**
+		 * Requestの準備を行います
+		 * 主にdependenciesのセットアップを行います
+		 * 
+		 */		
+		final protected function startup():void
+		{
+			if (!IRequest(this).dependenciesClass || this.$dependencies) return;
+			
+			this.$dependencies = new ImmutableObjectProxy(new (IRequest(this).dependenciesClass)());
+			$dependencies.notifier.addEventListener(ImmutableObjectEvent.SET_IMMUTABLE_OBJECT, onSetDependency);
+			
+			for each(var dependency:IRequest in this.dependencies) {
+				Kitchen.instance.register(dependency, IRequest(this));
 			}
-			_worker = new Worker(IRequest(this).recipe);
-			_worker.notifier.addEventListener(WorkerEvent.COMPLETE, onComplete);
-			_worker.start();
 		}
-
-
-
-		protected function onComplete(event:Event):void
-		{
-			_result = WorkerEvent(event).worker.result;
-			this.$isEnded = true;
-			this.notifier.dispatchEvent(new RequestEvent(RequestEvent.COMPLETE, IRequest(this)));
+		
+		
+		protected function onSetDependency(event:ImmutableObjectEvent):void
+		{			
+			Kitchen.instance.register(event.newValue, IRequest(this));
 		}
-
+		
 		
 		
 		/**
 		 * コンストラクタです
+		 * このクラスを直接呼ぶとerrorが発生します
 		 * 
-		 */		
+		 */
 		public function AbstRequest()
 		{
-			_eventSender = new EventDispatcher();
-		}		
-		
+			if (getQualifiedClassName(this) == "st.crexi.as3.framework.cafe.core::AbstRequest2") throw new HogeError(this, HogeError.NOT_EXTENDS_ERROR);
+			
+			_notifier = new EventDispatcher();
+			$status = RequestStatusType.IDLE;
+		}
 
+		
 	}
 }

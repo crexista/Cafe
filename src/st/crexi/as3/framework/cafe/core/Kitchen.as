@@ -3,22 +3,15 @@ package st.crexi.as3.framework.cafe.core
 	import flash.errors.IllegalOperationError;
 	import flash.utils.Dictionary;
 	
-	import st.crexi.as3.framework.cafe.core.interfaces.IProcess;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
-	import st.crexi.as3.framework.cafe.core.interfaces.ITask;
 
-	/**
-	 * Waiterがrequestを登録します
-	 * このクラスはシングルトンです
-	 * 
-	 * @author crexista
-	 * 
-	 */	
 	public class Kitchen
 	{
 		
-		private var _tasks:Dictionary;
-		
+		/**
+		 * request
+		 */		
+		private var _requests:Dictionary;
 		
 		/**
 		 *ほげ 
@@ -35,7 +28,7 @@ package st.crexi.as3.framework.cafe.core
 			return _singleTon();
 		}
 		
-			
+		
 		/**
 		 * SingleTonオブジェクトを返します
 		 * @return 
@@ -45,19 +38,19 @@ package st.crexi.as3.framework.cafe.core
 		{
 			return _singleTon();
 		}
-
-
-
+		
+		
+		
 		/**
 		 * requestとtaskを登録します
 		 * @param request
 		 * @param task
 		 * 
 		 */		
-		public function register(request:IProcess, task:IProcess):void
+		public function register(parent:IRequest, child:IRequest):void
 		{
-			if (!_tasks[task]) _tasks[task] = new Vector.<IProcess>;
-			_tasks[task].push(request);
+			if (!_requests[parent]) _requests[parent] = new Vector.<IRequest>
+			_requests[parent].push(child);
 		}
 		
 		
@@ -67,27 +60,23 @@ package st.crexi.as3.framework.cafe.core
 		 * @return 
 		 * 
 		 */		
-		public function getTasks(value:IProcess):Vector.<IProcess>
+		public function getTasks(value:IRequest):Vector.<IRequest>
 		{
-			return _tasks[value];
+			return _requests[value];
 		}
 		
 		
 		/**
-		 * コンストラクタです
-		 * 
-		 * @param guard
+		 * コンストラクタ
 		 * 
 		 */		
 		public function Kitchen(guard:Guard)
 		{
-			if (!guard) throw IllegalOperationError("このクラスはnewできません");
-			_tasks = new Dictionary();
+			if (!guard) throw new IllegalOperationError("このクラスはnew できません");
+			_requests = new Dictionary();
 		}
 	}
 }
-
-
 
 class Guard
 {}

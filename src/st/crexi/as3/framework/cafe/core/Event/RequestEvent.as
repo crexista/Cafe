@@ -22,7 +22,7 @@ package st.crexi.as3.framework.cafe.core.Event
 		/**
 		 * requestがreloadされたときに飛びます
 		 */		
-		public static const RELOAD:String = "requestReload";
+		public static const ABORT:String = "requestFail";
 		
 		
 		/**

@@ -66,6 +66,7 @@ package st.crexi.as3.framework.cafe.utils
 			}
 			
 			xml = _instanceDic[instance];
+			trace(xml);
 			
 			var props:XMLList = xml[key] as XMLList;
 			
