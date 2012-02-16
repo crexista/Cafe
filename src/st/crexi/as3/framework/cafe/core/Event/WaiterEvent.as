@@ -4,7 +4,7 @@ package st.crexi.as3.framework.cafe.core.Event
 	
 	/**
 	 * waiterが投げるイベントです
-	 * @author crexista
+	 * @author kaora crexista
 	 * 
 	 */	
 	public class WaiterEvent extends Event

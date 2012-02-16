@@ -7,7 +7,7 @@ package st.crexi.as3.framework.cafe.core.Event
 	
 	/**
 	 * Requestがかんりょうしたり、reloadされたりした場合に飛ぶRequestEventです
-	 * @author crexista
+	 * @author kaora crexista
 	 * 
 	 */	
 	public class RequestEvent extends Event

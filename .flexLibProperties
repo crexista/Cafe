@@ -7,7 +7,7 @@
     <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.IRequest"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.IRecipe"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.AbstRequest"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.errors.HogeError"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.errors.NonrecognitionUseError"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.Worker"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.Waiter"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.RequestStatusType"/>

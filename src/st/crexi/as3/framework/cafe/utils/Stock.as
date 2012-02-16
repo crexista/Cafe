@@ -130,7 +130,7 @@ package st.crexi.as3.framework.cafe.utils
 		/**
 		 * Dictionaryに入っているkeyの数を返します
 		 * @return Dictionaryに入っているkeyの数
-		 * @author Kaoru Shibasaki<kaoru_shibasaki@dwango.co.jp>
+		 * @author Kaoru Shibasaki<kaora crexista@dwango.co.jp>
 		 */
 		public function get length():int
 		{

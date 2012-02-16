@@ -8,7 +8,7 @@ package st.crexi.as3.framework.cafe.core
 	import mx.events.PropertyChangeEvent;
 	
 	import st.crexi.as3.framework.cafe.core.Event.ImmutableObjectEvent;
-	import st.crexi.as3.framework.cafe.core.errors.HogeError;
+	import st.crexi.as3.framework.cafe.core.errors.NonrecognitionUseError;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRecipe;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
 	import st.crexi.as3.framework.cafe.utils.ImmutableObjectProxy;
@@ -16,7 +16,7 @@ package st.crexi.as3.framework.cafe.core
 	
 	/**
 	 * Requestの抽象クラスです
-	 * @author kaoru_shibasaki
+	 * @author kaora crexista
 	 * 
 	 */
 	public class AbstRequest
@@ -52,9 +52,7 @@ package st.crexi.as3.framework.cafe.core
 		
 		
 		private var _notifier:IEventDispatcher
-		
-		
-		private var _isInitialize:Boolean;
+
 
 
 		
@@ -98,22 +96,6 @@ package st.crexi.as3.framework.cafe.core
 		}
 		
 		
-		/**
-		 * このクラスのコンストラクタ代わりです.
-		 * newする時以外に呼ぶとerrorが飛びます
-		 * 
-		 * @param value
-		 * @return 
-		 * 
-		 */		
-		final public function constructor(value:*):IRequest
-		{
-			$invokeArg = value;
-			return IRequest(this);
-		}
-		
-		
-		
 		
 		
 		/**
@@ -131,12 +113,37 @@ package st.crexi.as3.framework.cafe.core
 			for each(var dependency:IRequest in this.dependencies) {
 				Kitchen.instance.register(dependency, IRequest(this));
 			}
+			
+			try {
+				this["dependencies"] = $dependencies
+			}
+			catch(error:Error) {
+				
+				//TODO errorクラスをきちんと描く				
+				throw new NonrecognitionUseError(this, NonrecognitionUseError.NOT_EQUIP_SETTER, "dependencies");
+			}
 		}
 		
 		
+		
+		/**
+		 * dependenciesのメンバーに変更が有ったときに呼ばれます
+		 * @param event
+		 * 
+		 */		
 		protected function onSetDependency(event:ImmutableObjectEvent):void
 		{			
 			Kitchen.instance.register(event.newValue, IRequest(this));
+		}
+		
+		/**
+		 * エラーチェックをします
+		 * 
+		 * 
+		 */		
+		protected function filter():void
+		{
+			if (getQualifiedClassName(this) == "st.crexi.as3.framework.cafe.core::AbstRequest2") throw new NonrecognitionUseError(this, NonrecognitionUseError.NOT_EXTENDS_ERROR);
 		}
 		
 		
@@ -148,7 +155,8 @@ package st.crexi.as3.framework.cafe.core
 		 */
 		public function AbstRequest()
 		{
-			if (getQualifiedClassName(this) == "st.crexi.as3.framework.cafe.core::AbstRequest2") throw new HogeError(this, HogeError.NOT_EXTENDS_ERROR);
+			filter();
+			
 			
 			_notifier = new EventDispatcher();
 			$status = RequestStatusType.IDLE;

@@ -11,7 +11,7 @@ package st.crexi.as3.framework.cafe.utils
 	
 	/**
 	 * Immutableなオブジェクトを作るためのUtilitiyです 
-	 * @author kaoru_shibasaki
+	 * @author kaora crexista
 	 * 
 	 */	
 	dynamic public class ImmutableObjectProxy extends Proxy

@@ -8,7 +8,7 @@ package st.crexi.as3.framework.cafe.core.Event
 	
 	/**
 	 * Workerの処理が終了したら投げられるEventです
-	 * @author crexista
+	 * @author kaora crexista
 	 * 
 	 */	
 	public class WorkerEvent extends Event
