@@ -99,6 +99,7 @@ package st.crexi.as3.framework.cafe.utils
 			var b:ByteArray = new ByteArray();
 			
 			b.writeObject(arg);
+			trace(b);
 			b.position = 0;
 			return b.readObject();
 		}
