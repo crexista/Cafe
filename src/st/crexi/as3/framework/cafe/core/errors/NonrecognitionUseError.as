@@ -29,6 +29,8 @@ package st.crexi.as3.framework.cafe.core.errors
 		 */		
 		public static const SET_IMMUTABLE_AGAIN:int = 2;
 		
+		public static const NOT_OVERRIDE_ERROR:int = 3;
+		
 		
 		/**
 		 * エラーメッセージを生成するメソッドです

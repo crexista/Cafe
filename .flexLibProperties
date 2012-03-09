@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
-    <classEntry path="st.crexi.as3.framework.cafe.core.Event.WaiterEvent"/>
-    <classEntry path="st.crexi.as3.framework.cafe.utils.Stock"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.IProcess"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.IRequest"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.IRecipe"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.AbstRequest"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.errors.NonrecognitionUseError"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.Worker"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.Waiter"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.RequestStatusType"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.Kitchen"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.Event.ImmutableObjectEvent"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.AbstRequest2"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.IRequest2"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.RequestProxy"/>
+    <classEntry path="st.crexi.as3.framework.cafe.HogeRequest"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
