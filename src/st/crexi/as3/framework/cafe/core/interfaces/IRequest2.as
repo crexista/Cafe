@@ -9,5 +9,13 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		 * 
 		 */		
 		function get isSingleTon():Boolean;
+		
+		
+		/**
+		 * Requestの結果を返します
+		 * @return 
+		 * 
+		 */		
+		function get result():*;
 	}
 }

@@ -3,8 +3,11 @@
   <includeClasses>
     <classEntry path="st.crexi.as3.framework.cafe.core.AbstRequest2"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.IRequest2"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.RequestProxy"/>
     <classEntry path="st.crexi.as3.framework.cafe.HogeRequest"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.RequestBase"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.Waiter2"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.interfaces.IClassKeyLogic"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.Rule"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

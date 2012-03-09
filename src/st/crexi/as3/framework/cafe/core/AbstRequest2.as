@@ -6,7 +6,12 @@ package st.crexi.as3.framework.cafe.core
 	import st.crexi.as3.framework.cafe.core.interfaces.IRecipe;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest2;
 
-	public class AbstRequest2 extends RequestProxy
+	/**
+	 * 
+	 * @author kaora crexista
+	 * 
+	 */	
+	public class AbstRequest2 extends RequestBase
 	{
 		
 		/**
@@ -19,7 +24,7 @@ package st.crexi.as3.framework.cafe.core
 		 * @return 
 		 * 
 		 */		
-		protected function onReady():IRecipe
+		protected function onReady(argument:*):IRecipe
 		{
 			throw new NonrecognitionUseError(this, NonrecognitionUseError.NOT_OVERRIDE_ERROR, "onReady");
 		}
@@ -47,9 +52,14 @@ package st.crexi.as3.framework.cafe.core
 		{
 			throw new NonrecognitionUseError(this, NonrecognitionUseError.NOT_OVERRIDE_ERROR, "onError");
 		}
+		
 
 
-
+		
+		/**
+		 * コンストラクタです
+		 * 
+		 */
 		public function AbstRequest2()
 		{
 			$handler = new Handler(onReady, onSuccess, onError);
