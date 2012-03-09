@@ -47,7 +47,8 @@ package st.crexi.as3.framework.cafe.core
 
 
 		/**
-		 * 
+		 * コンストラクタです
+		 * 呼び出すとエラーが還ります
 		 * 
 		 */		
 		public function Rule()
