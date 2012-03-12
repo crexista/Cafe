@@ -74,19 +74,6 @@ package st.crexi.as3.framework.cafe.core
 		}
 
 
-
-		/**
-		 * 
-		 * @param request
-		 * 
-		 */		
-		public function addhoge(request:IRequest2, logic:IClassKeyLogic):void
-		{
-			if (!request.isSingleTon) return;
-			var className:String = logic.exchange(request);
-			_sigleTonRequest[className] = request;
-		}
-		
 		
 		public function getRequest(key:String):*
 		{

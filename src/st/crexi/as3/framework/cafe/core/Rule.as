@@ -22,6 +22,9 @@ package st.crexi.as3.framework.cafe.core
 		private static var _logic:IClassKeyLogic;
 		
 		
+		private static var _orders:Object;
+		
+		
 		/**
 		 * 
 		 * @return 
@@ -30,6 +33,36 @@ package st.crexi.as3.framework.cafe.core
 		internal static function get logic():IClassKeyLogic
 		{
 			return _logic;
+		}
+		
+		
+		/**
+		 * orderをもとにラベルを返します
+		 * ただし、orderでwrapしているrequestがSingletonじゃない場合はnullを返します
+		 * @param order
+		 * @return 
+		 * 
+		 */		
+		public static function getLabel(order:AbstOrder):String
+		{
+			if (!order.$request.isSingleTon) return null;
+			if (!_orders)_orders = new Object;
+			var label:String = _logic.exchange(order["constructor"]);
+			_orders[label] = order;
+			
+			return label;
+		}
+		
+		
+		/**
+		 * 
+		 * @param label
+		 * @return 
+		 * 
+		 */		
+		public static function getOrder(label:String):AbstOrder
+		{
+			return _orders[label];
 		}
 		
 		

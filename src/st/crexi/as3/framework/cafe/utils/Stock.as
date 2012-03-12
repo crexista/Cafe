@@ -116,6 +116,21 @@ package st.crexi.as3.framework.cafe.utils
 		
 		
 		/**
+		 * 指定のkeyを持っているかどうかです
+		 * @param key
+		 * @return 
+		 * 
+		 */		
+		public function hasKey(key:Object):Boolean
+		{
+			if (!_queDictionary) return false;
+			if (!_queDictionary[key]) return false;
+			
+			return true;
+		}
+		
+		
+		/**
 		 * 全てのkeyとそれに紐付くデータを削除します
 		 * 
 		 */

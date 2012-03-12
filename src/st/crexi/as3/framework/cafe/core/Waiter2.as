@@ -2,7 +2,11 @@ package st.crexi.as3.framework.cafe.core
 {
 	import flash.utils.ByteArray;
 	
-	import st.crexi.as3.framework.cafe.core.Event.RequestEvent;
+	import mx.utils.OrderedObject;
+	
+	import st.crexi.as3.framework.cafe.core.Event.OrderEvent;
+	
+	import st.crexi.as3.framework.cafe.utils.Stock;
 	
 	/**
 	 * Requestを受け取って処理を行うクラスです
@@ -18,42 +22,98 @@ package st.crexi.as3.framework.cafe.core
 		private var _requests:Array;
 		
 		
+		private var _stock:Stock;
+		
+		private var _orders:Vector.<AbstOrder>;
+		
+		
 		/**
 		 * 突っ込まれたRequestの処理をスタートさせます
 		 * @param requests
 		 * 
 		 */		
-		public function start(requests:Array):void
+		public function start(orders:Array):void
 		{
-			_requests = requests;
-			//requestのdependencieを探索して、依存しているクラスがないor依存しているrequestの処理が
-			//終わっている場合は実行します
-			//reloadChildren(Vector.<IRequest>(_requests));
-			for each(var request:AbstRequest2 in _requests) {
+			var isWait:Boolean = false;
+			var worker:Worker2;
+			_orders = Vector.<AbstOrder>(orders);
+			
+			for each(var order:AbstOrder in _orders) {
 				
-				var worker:Worker;				
-				var isWait:Boolean = hasWaiting(request);
+				isWait = hasWaiting(order);
 				if (isWait) continue;
 				
-				
-				if (!request.notifier.hasEventListener(RequestEvent.COMPLETE)) {
-					request.notifier.addEventListener(RequestEvent.COMPLETE, onComplete);
+				if (!order.notifier.hasEventListener(OrderEvent.COMPLETE)) {
+					order.notifier.addEventListener(OrderEvent.COMPLETE, onComplete)
 				}
-				_stock.add(request, worker);
-				_isSync++;
 				
-				worker = new Worker(request, this);
-				_isSync--;
-				if (_stock.length == 0 && !_isSync)  {					
-					_eventDispatcher.dispatchEvent(new WaiterEvent(WaiterEvent.ALL_COMPLETE));
-				}				
+				worker = new Worker2(order);
+				_stock.add(order, worker);
+				worker.$start();
 			}
 		}
 		
 		
-		protected function hasWaiting(request:AbstRequest2):Boolean
+		
+		protected function onComplete(orderEvent:OrderEvent):void
 		{
-			return false;
+			var order:AbstOrder
+			var worker:Worker2;
+			
+			_stock.del(orderEvent.order);
+			
+			for each(var container:Container in order.$children) {
+				
+				var child:AbstOrder = container.main;
+				var isWait:Boolean = hasWaiting(child);
+				
+				if (isWait) continue;
+				child[container.lable] = order.$result;
+				
+				if (!order.notifier.hasEventListener(OrderEvent.COMPLETE)) {
+					order.notifier.addEventListener(OrderEvent.COMPLETE, onComplete)
+				}
+
+				_stock.add(child, worker);
+				
+				//再起処理には入ってしまっているかのチェック
+				//_isOnCompleteSync++;
+				worker = new Worker2(child);
+				worker.$start();
+				//_isOnCompleteSync--;
+				
+			}
+			
+			/*
+			if (_stock.length == 0 && _isSync == 0 && _isOnCompleteSync == 0)  {				
+				_eventDispatcher.dispatchEvent(new WaiterEvent(WaiterEvent.ALL_COMPLETE));
+			}*/
+			
+		}
+		
+		
+		protected function hasWaiting(order:AbstOrder):Boolean
+		{
+			var isWait:Boolean = false;
+			
+			
+			if (order.$status != RequestStatusType.IDLE) return true
+			
+			for each(var parent:AbstOrder in order.$parents) {
+				if (parent.$status != RequestStatusType.END) isWait = true;
+				if (isWait) break;
+			}
+			
+			return isWait;
+		}
+		
+		
+		protected function reloadChildren(order:AbstOrder):void
+		{
+			for each(var child:AbstOrder in order.$children) {
+				child.$status = RequestStatusType.IDLE;
+				if (_stock.hasKey(child)) _stock.get(child).dispose();
+			}
 		}
 		
 		
