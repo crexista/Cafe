@@ -4,6 +4,8 @@ package st.crexi.as3.framework.cafe.core
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	
+	import mx.events.Request;
+	
 	import st.crexi.as3.framework.cafe.core.interfaces.IClassKeyLogic;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest2;
@@ -83,6 +85,12 @@ package st.crexi.as3.framework.cafe.core
 			if (!request.isSingleTon) return;
 			var className:String = logic.exchange(request);
 			_sigleTonRequest[className] = request;
+		}
+		
+		
+		public function getRequest(key:String):*
+		{
+			return _sigleTonRequest[key];
 		}
 		
 		
