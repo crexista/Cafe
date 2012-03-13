@@ -3,7 +3,8 @@ package st.crexi.as3.framework.cafe.core
 	import flash.utils.Proxy;
 	import flash.utils.flash_proxy;
 	
-	import st.crexi.as3.framework.cafe.core.interfaces.IRequest2;
+	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
+	import st.crexi.as3.framework.cafe.utils.Bottle;
 
 	/**
 	 * 
@@ -52,8 +53,8 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		protected function from(order:AbstOrder):void
 		{
-			order.$children.push(new Container(_order, _name));
-			_order.$parents.push(order);
+			order.$variables.children.push(new Bottle(_order, _name));
+			_order.$variables.parents.push(order);
 		}
 	}
 }

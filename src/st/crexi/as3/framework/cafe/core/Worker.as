@@ -3,19 +3,20 @@ package st.crexi.as3.framework.cafe.core
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	
-	import st.crexi.as3.framework.cafe.core.Event.OrderEvent;
+	import st.crexi.as3.framework.cafe.core.events.OrderEvent;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRecipe;
-	import st.crexi.as3.framework.cafe.core.interfaces.IRequest2;
+	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
 	import st.crexi.as3.framework.cafe.utils.OrderStatusType;
 
+	/**
+	 * Requestの持つrecipeを受け取り処理を行います
+	 * 
+	 * @author kaora crexista
+	 * 
+	 */	
 	public class Worker
 	{
-		
-		/**
-		 * workerで実行するrequestです
-		 */		
-		private var _request:IRequest2
-		
+
 		
 		/**
 		 * Workerで実行されているOrderです
@@ -67,9 +68,9 @@ package st.crexi.as3.framework.cafe.core
 		 * @return 
 		 * 
 		 */		
-		public function get request():IRequest2
+		public function get request():IRequest
 		{
-			return _request;
+			return _order.$request;
 		}
 		
 		/**
@@ -79,16 +80,16 @@ package st.crexi.as3.framework.cafe.core
 		internal function $start():void
 		{
 			
-			_order.$status = OrderStatusType.INVOKING;
-			_recipe = _request.recipe;
-			_request.setup(_order.$argument);
+			_order.$variables.status = OrderStatusType.INVOKING;
+			_recipe = this.request.recipe;
+			this.request.setup(_order.$variables.argument);
 			if (!_recipe) {
-				_request.onSuccess(null, _waiter, this);
+				this.request.onSuccess(new Draft(new Guard, _waiter, this, null));
 				return;
 			}
 
 			if (!_recipe.eventTarget.hasEventListener(_recipe.successEventType)) {
-				_recipe.eventTarget.addEventListener(_recipe.successEventType, onSuccess(_recipe.eventTarget, _request));
+				_recipe.eventTarget.addEventListener(_recipe.successEventType, onSuccess(_recipe.eventTarget, this.request));
 			}
 			
 			_recipe.start();
@@ -102,13 +103,13 @@ package st.crexi.as3.framework.cafe.core
 		 * @return 
 		 * 
 		 */		
-		protected function onSuccess(target:IEventDispatcher, request:IRequest2):Function
+		protected function onSuccess(target:IEventDispatcher, request:IRequest):Function
 		{
 			var worker:Worker = this;
 			
 			var callBack:Function = function (event:Event):void
-			{
-				request.onSuccess(event, _waiter, worker);
+			{				
+				request.onSuccess(new Draft(new Guard, _waiter, worker, event));
 			};
 			_callBack = callBack;
 			return callBack;
@@ -123,12 +124,12 @@ package st.crexi.as3.framework.cafe.core
 		 * @return 
 		 * 
 		 */		
-		protected function onError(target:IEventDispatcher, request:IRequest2):Function
+		protected function onError(target:IEventDispatcher, request:IRequest):Function
 		{			
 			var worker:Worker = this;			
 			var callBack:Function = function (event:Event):void
 			{
-				request.onError(event, _waiter, worker);
+				request.onError(new Draft(new Guard, _waiter, worker, event));
 			};
 			
 			return callBack;
@@ -137,17 +138,18 @@ package st.crexi.as3.framework.cafe.core
 		
 		
 		/**
+		 * Requestの処理を終了させます。
 		 * 
-		 * @param value
+		 * @param value Requestの処理結果を入れます
 		 * 
 		 */		
-		public function end(value:AbstResult = null):void
+		public function end(result:AbstResult = null):void
 		{
-			if (value != null) {
-				_order.$result = value;
-				value.from(_order);
+			if (result != null) {
+				_order.$variables.result = result;
+				result.from(_order);
 			}
-			_order.$status = OrderStatusType.END;
+			_order.$variables.status = OrderStatusType.END;
 			
 			if (_recipe) _recipe.eventTarget.removeEventListener(_recipe.successEventType, _callBack);
 			
@@ -164,8 +166,8 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		public function abort(value:* = null):void
 		{
-			if (value != null) _order.$result = value;
-			_order.$status = OrderStatusType.END;
+			if (value != null) _order.$variables.result = value;
+			_order.$variables.status = OrderStatusType.END;
 			if (_recipe) _recipe.eventTarget.removeEventListener(_recipe.successEventType, _callBack);
 			_order.notifier.dispatchEvent(new OrderEvent(OrderEvent.ABORT, _order));
 			
@@ -182,11 +184,15 @@ package st.crexi.as3.framework.cafe.core
 		}
 
 		
+		/**
+		 * コンストラクタです
+		 * @param order
+		 * @param waiter
+		 * 
+		 */		
 		public function Worker(order:AbstOrder, waiter:Waiter)
-		{
-			
+		{			
 			_order = order;
-			_request = order.$request;
 			_waiter = waiter;
 		}
 	}

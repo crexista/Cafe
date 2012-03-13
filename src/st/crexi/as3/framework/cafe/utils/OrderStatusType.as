@@ -1,5 +1,12 @@
 package st.crexi.as3.framework.cafe.utils
 {
+	
+	/**
+	 * Orderがとりうるstatusのタイプを定義しているクラスです
+	 * 
+	 * @author kaora crexista
+	 * 
+	 */
 	public class OrderStatusType
 	{
 		

@@ -4,7 +4,8 @@ package st.crexi.as3.framework.cafe.core
 	import flash.events.IEventDispatcher;
 	
 	import st.crexi.as3.framework.cafe.core.errors.NonrecognitionUseError;
-	import st.crexi.as3.framework.cafe.core.interfaces.IRequest2;
+	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
+	import st.crexi.as3.framework.cafe.utils.Bottle;
 	import st.crexi.as3.framework.cafe.utils.OrderStatusType;
 	
 	/**
@@ -18,7 +19,7 @@ package st.crexi.as3.framework.cafe.core
 		/**
 		 * requestClassでnewされたreqeustです
 		 */		
-		private var _request:IRequest2;
+		private var _request:IRequest;
 		
 		
 		
@@ -36,33 +37,10 @@ package st.crexi.as3.framework.cafe.core
 
 		
 		/**
+		 * internalで他のAbst系クラスからしようされる変数
 		 * 
-		 */
-		internal var $argument:Object;
-		
-		
-		/**
-		 * このOrderが依存しているRequestです
 		 */		
-		internal var $parents:Vector.<AbstOrder>;
-		
-		
-		/**
-		 * Orderの進行状況です
-		 */		
-		internal var $status:String = OrderStatusType.IDLE;
-		
-		
-		/**
-		 * このOrderに依存しているRequestです
-		 */		
-		internal var $children:Vector.<Container>;
-		
-		
-		/**
-		 * このOrderの結果です
-		 */		
-		internal var $result:*
+		internal var $variables:Variables;
 		
 		
 		
@@ -77,7 +55,7 @@ package st.crexi.as3.framework.cafe.core
 				throw new Error("このメソッドがよべるのは1度だけです");
 			};
 			
-			$argument = value;
+			$variables.argument = value;
 		}
 		
 		
@@ -86,7 +64,7 @@ package st.crexi.as3.framework.cafe.core
 		 * @return 
 		 * 
 		 */		
-		internal function get $request():IRequest2
+		internal function get $request():IRequest
 		{			
 			return _request;
 		}
@@ -121,7 +99,7 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		final public function initRequest(value:*=null):*
 		{
-			_initFunc();
+			_initFunc(value);
 			return this;
 		}
 		
@@ -146,12 +124,51 @@ package st.crexi.as3.framework.cafe.core
 		public function AbstOrder()
 		{
 			_request = new requestClass();
-			var label:String = DILogic.getLabel(this);			
-			
+			DILogic.getLabel(this);			
 			_notifier = new EventDispatcher; 
-			$parents = new Vector.<AbstOrder>;
-			$children = new Vector.<Container>;
+			$variables = new Variables;
+			$variables.parents = new Vector.<AbstOrder>;
+			$variables.children = new Vector.<Bottle>;
 			_requestProxy = new RequestProxy(_request, this);
+			
 		}
 	}
+}
+
+
+import st.crexi.as3.framework.cafe.core.AbstOrder;
+import st.crexi.as3.framework.cafe.utils.Bottle;
+import st.crexi.as3.framework.cafe.utils.OrderStatusType;
+
+
+class Variables
+{
+	/**
+	 * 
+	 */
+	public var argument:Object;
+	
+	
+	/**
+	 * このOrderが依存しているRequestです
+	 */		
+	public var parents:Vector.<AbstOrder>;
+	
+	
+	/**
+	 * Orderの進行状況です
+	 */		
+	public var status:String = OrderStatusType.IDLE;
+	
+	
+	/**
+	 * このOrderに依存しているRequestです
+	 */		
+	public var children:Vector.<Bottle>;
+	
+	
+	/**
+	 * このOrderの結果です
+	 */		
+	public var result:*
 }

@@ -2,6 +2,7 @@ package st.crexi.as3.framework.cafe.core.interfaces
 {
 	import flash.events.Event;
 	
+	import st.crexi.as3.framework.cafe.core.Draft;
 	import st.crexi.as3.framework.cafe.core.Waiter;
 	import st.crexi.as3.framework.cafe.core.Worker;
 
@@ -11,7 +12,7 @@ package st.crexi.as3.framework.cafe.core.interfaces
 	 * @author kaoru_shibasaki
 	 * 
 	 */		
-	public interface IRequest2
+	public interface IRequest
 	{
 		
 		/**
@@ -50,7 +51,7 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		 * @param event
 		 * 
 		 */		
-		function onSuccess(event:Event, waiter:Waiter, worker:Worker):void;
+		function onSuccess(draft:Draft):void;
 		
 		
 		
@@ -60,6 +61,6 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		 * @param event
 		 * 
 		 */		
-		function onError(event:Event, waiter:Waiter, worker:Worker):void;
+		function onError(draft:Draft):void;
 	}
 }

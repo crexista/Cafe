@@ -6,10 +6,11 @@ package st.crexi.as3.framework.cafe.core
 	
 	import mx.controls.Menu;
 	
-	import st.crexi.as3.framework.cafe.core.Event.OrderEvent;
-	import st.crexi.as3.framework.cafe.core.Event.WaiterEvent;
+	import st.crexi.as3.framework.cafe.core.events.OrderEvent;
+	import st.crexi.as3.framework.cafe.core.events.WaiterEvent;
 	import st.crexi.as3.framework.cafe.utils.OrderStatusType;
 	import st.crexi.as3.framework.cafe.utils.Stock;
+	import st.crexi.as3.framework.cafe.utils.Bottle;
 	
 	/**
 	 * Requestを受け取って処理を行うクラスです
@@ -121,10 +122,10 @@ package st.crexi.as3.framework.cafe.core
 			var orders:Array = new Array;
 			
 			for each(var menu:Menu in menus) {
-				menu.order.$argument = menu.argument;
+				menu.order.$variables.argument = menu.argument;
 				orders.push(menu.order);
-				menu.order.$status = OrderStatusType.IDLE;
-				reloadChildren(menu.order);
+				menu.order.$variables.status = OrderStatusType.IDLE;
+				$reloadChildren(menu.order);
 			}
 			
 			start(orders);
@@ -161,13 +162,13 @@ package st.crexi.as3.framework.cafe.core
 			order = orderEvent.order;
 			_stock.del(orderEvent.order);
 			
-			for each(var container:Container in order.$children) {
+			for each(var container:Bottle in order.$variables.children) {
 				
 				var child:AbstOrder = container.main;
 				var isWait:Boolean = hasWaiting(child);
 				_stock.add(child, null);
 				if (isWait) continue;
-				child.$request[container.lable] = order.$result;
+				child.$request[container.label] = order.$variables.result;
 				
 				if (!child.notifier.hasEventListener(OrderEvent.COMPLETE)) {
 					child.notifier.addEventListener(OrderEvent.COMPLETE, onComplete)
@@ -199,10 +200,10 @@ package st.crexi.as3.framework.cafe.core
 			var isWait:Boolean = false;
 			
 			
-			if (order.$status != OrderStatusType.IDLE) return true
+			if (order.$variables.status != OrderStatusType.IDLE) return true
 			
-			for each(var parent:AbstOrder in order.$parents) {
-				if (parent.$status != OrderStatusType.END) isWait = true;
+			for each(var parent:AbstOrder in order.$variables.parents) {
+				if (parent.$variables.status != OrderStatusType.END) isWait = true;
 				if (isWait) break;
 			}
 			
@@ -215,11 +216,11 @@ package st.crexi.as3.framework.cafe.core
 		 * @param order
 		 * 
 		 */		
-		protected function reloadChildren(order:AbstOrder):void
+		internal function $reloadChildren(order:AbstOrder):void
 		{
-			for each(var container:Container in order.$children) {
+			for each(var container:Bottle in order.$variables.children) {
 				var child:AbstOrder = container.main;
-				child.$status = OrderStatusType.IDLE;
+				child.$variables.status = OrderStatusType.IDLE;
 				if (_stock.hasKey(child)) Worker(_stock.get(child)).dispose();
 			}
 		}
@@ -233,14 +234,18 @@ package st.crexi.as3.framework.cafe.core
 		 * 
 		 */		
 		protected function clone(arg:*):* {
-			var b:ByteArray = new ByteArray();
+			var byte:ByteArray = new ByteArray();
 			
-			b.writeObject(arg);
-			b.position = 0;
-			return b.readObject();
+			byte.writeObject(arg);
+			byte.position = 0;
+			return byte.readObject();
 		}
 		
 		
+		/**
+		 * コンストラクタ
+		 * 
+		 */
 		public function Waiter()
 		{
 			_stock = new Stock();

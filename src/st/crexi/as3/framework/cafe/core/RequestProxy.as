@@ -6,7 +6,8 @@ package st.crexi.as3.framework.cafe.core
 	import flash.utils.Proxy;
 	import flash.utils.flash_proxy;
 	
-	import st.crexi.as3.framework.cafe.core.interfaces.IRequest2;
+	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
+	import st.crexi.as3.framework.cafe.utils.Bottle;
 	
 	/**
 	 * RequestのProxyですOrder.request経由でrequestのメソッドを呼び出そうとしたらErrorをすっ飛ばします
@@ -18,7 +19,7 @@ package st.crexi.as3.framework.cafe.core
 		/**
 		 * オリジナルのIRequestオブジェクトです
 		 */		
-		private var _origin:IRequest2;
+		private var _origin:IRequest;
 		
 		/**
 		 * オリジナルのIRequestオブジェクトをcloneしてできたObjectです
@@ -29,18 +30,6 @@ package st.crexi.as3.framework.cafe.core
 		 * enumをするために必要となった配列です
 		 */		
 		private var _indexArr:Array;
-		
-		
-		/**
-		 * 処理が終了したときに飛ばすEventDispatcherです
-		 */		
-		private var _notifier:IEventDispatcher;
-		
-		
-		public function get notifier():IEventDispatcher
-		{
-			return _notifier;
-		}
 		
 		
 		
@@ -80,7 +69,12 @@ package st.crexi.as3.framework.cafe.core
 			throw new Error("これ以上値を入れられません");
 		}
 		
-		
+		/**
+		 * for 文でまわすよう
+		 * @param index
+		 * @return 
+		 * 
+		 */		
 		override flash_proxy function nextNameIndex(index:int):int
 		{
 			if (index < _indexArr.length) {
@@ -90,12 +84,24 @@ package st.crexi.as3.framework.cafe.core
 			}
 		}
 		
+		/**
+		 * for文でまわすよう
+		 * @param index
+		 * @return 
+		 * 
+		 */		
 		override flash_proxy function nextName(index:int):String {
 			
 			return _indexArr[index - 1];
 		}
 		
 		
+		/**
+		 * for文でまわすよう
+		 * @param index
+		 * @return 
+		 * 
+		 */		
 		override flash_proxy function nextValue(index:int):*
 		{
 			return _delegator[_indexArr[index - 1]];
@@ -109,11 +115,39 @@ package st.crexi.as3.framework.cafe.core
 		 * 
 		 */		
 		protected function clone(request:*):* {
-			var b:ByteArray = new ByteArray();
+			var byte:ByteArray = new ByteArray();
 			
-			b.writeObject(request);
-			b.position = 0;
-			return b.readObject();
+			byte.writeObject(request);
+			byte.position = 0;
+			return byte.readObject();
+		}
+		
+		
+		/**
+		 * 
+		 * @param order
+		 * @param origin
+		 * @param delegator
+		 * @param index
+		 * 
+		 */		
+		protected function align(order:AbstOrder, origin:IRequest, delegator:Object, index:Array):void
+		{
+			var parent:AbstOrder;
+			var clone:Object = clone(origin);
+			
+			for (var key:String in clone) {
+				delegator[key] = new ResultProxy(order, key);
+				index.push(key);
+				
+				//Orderが依存している他のOrderの子ノードとして登録
+				parent = DILogic.getOrder(key);
+				if (!parent) continue;
+				parent.$variables.children.push(new Bottle(order, key));
+				_delegator[key].from(parent);
+				order.$variables.parents.push(parent);
+			}
+
 		}
 		
 		
@@ -123,29 +157,12 @@ package st.crexi.as3.framework.cafe.core
 		 * @param origin
 		 * 
 		 */		
-		public function RequestProxy(origin:IRequest2, order:AbstOrder)
+		public function RequestProxy(origin:IRequest, order:AbstOrder)
 		{
 			_origin = origin;
 			_delegator = new Object;
-			var clone:Object = clone(origin);
-			_indexArr = new Array();
-			_notifier = new EventDispatcher();
-			var parent:AbstOrder;
-			var container:Container;
-			for (var key:String in clone) {				
-				//if (!(_delegator[key] is AbstResult)) throw new Error("AbstResultをextendsしたproperty以外を置く事ができません");
-				_delegator[key] = new ResultProxy(order, key);
-				_indexArr.push(key);
-				
-				//Orderが依存している他のOrderの子ノードとして登録
-				parent = DILogic.getOrder(key);
-				if (!parent) continue;
-				parent.$children.push(new Container(order, key));
-				_delegator[key].from(parent);
-				order.$parents.push(parent);
-				
-				
-			}
+			_indexArr = new Array();		
+			align(order, origin, _delegator, _indexArr);
 		}
 		
 	}

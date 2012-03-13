@@ -2,10 +2,23 @@ package st.crexi.as3.framework.cafe.utils
 {
 	import flash.utils.getQualifiedClassName;
 	
-	import st.crexi.as3.framework.cafe.core.interfaces.IDIRule;
+	import st.crexi.as3.framework.cafe.core.interfaces.IDISingletonRule;
 	
-	public class DefaultRuleLogic implements IDIRule
-	{		
+	
+	/**
+	 * デフォルトのクラスインスタンスの命名規則を操るクラスです
+	 * @author kaora crexista
+	 * 
+	 */	
+	public class DefaultRuleLogic implements IDISingletonRule
+	{
+
+		/**
+		 * 指定したクラスのインスタンスの名称返します
+		 * @param orderClass クラスオブジェクト
+		 * @return 
+		 * 
+		 */
 		public function exchange(orderClass:Class):String
 		{
 			var className:String = getQualifiedClassName(orderClass);
@@ -18,5 +31,6 @@ package st.crexi.as3.framework.cafe.utils
 			className = className.replace("Order", "Result");
 			return className;
 		}
+
 	}
 }
