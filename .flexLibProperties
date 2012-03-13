@@ -8,6 +8,7 @@
     <classEntry path="st.crexi.as3.framework.cafe.core.Worker2"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.Event.OrderEvent"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.Container"/>
+    <classEntry path="st.crexi.as3.framework.cafe.utils.DefaultRuleLogic"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

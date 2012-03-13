@@ -1,6 +1,6 @@
 package st.crexi.as3.framework.cafe.core.interfaces
 {	
-	public interface IClassKeyLogic
+	public interface IDIRule
 	{
 		
 		/**

@@ -43,13 +43,13 @@ package st.crexi.as3.framework.cafe.core
 		/**
 		 * このOrderが依存しているRequestです
 		 */		
-		internal var $parents:Vector.<IRequest2>;
+		internal var $parents:Vector.<AbstOrder>;
 		
 		
 		/**
 		 * Orderの進行状況です
 		 */		
-		internal var $status:String;
+		internal var $status:String = RequestStatusType.IDLE;
 		
 		
 		/**
@@ -145,9 +145,12 @@ package st.crexi.as3.framework.cafe.core
 		public function AbstOrder()
 		{
 			_request = new requestClass();
-			Rule.getLabel(this);
-			_requestProxy = new RequestProxy(_request, this);
+			var label:String = DILogic.getLabel(this);			
+			
 			_notifier = new EventDispatcher; 
+			$parents = new Vector.<AbstOrder>;
+			$children = new Vector.<Container>;
+			_requestProxy = new RequestProxy(_request, this);
 		}
 	}
 }

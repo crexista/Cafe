@@ -10,7 +10,7 @@ package st.crexi.as3.framework.cafe.core
 	 * @author crexista
 	 * 
 	 */	
-	public class ResultProxy extends Proxy
+	internal dynamic class ResultProxy extends Proxy
 	{
 		
 		/**
@@ -29,7 +29,7 @@ package st.crexi.as3.framework.cafe.core
 		 * @param order
 		 * 
 		 */		
-		public function ResultProxy(order:AbstOrder, name:String = null)
+		public function ResultProxy(order:AbstOrder, name:String)
 		{
 			_order = order;
 			_name = name;
@@ -38,8 +38,10 @@ package st.crexi.as3.framework.cafe.core
 		
 		
 		override flash_proxy function callProperty(name:*, ...parameters):*
-		{
-			this.protected::[name](parameters[0]);
+		{			
+			var func:Function = this.protected::[name.localName];
+			
+			func.call(null, parameters[0]);
 		}
 		
 		
@@ -50,7 +52,7 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		protected function from(order:AbstOrder):void
 		{
-			order.$children.push(_order);
+			order.$children.push(new Container(_order, _name));
 			_order.$parents.push(order);
 		}
 	}

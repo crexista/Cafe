@@ -6,7 +6,7 @@ package st.crexi.as3.framework.cafe.core
 	
 	import mx.events.Request;
 	
-	import st.crexi.as3.framework.cafe.core.interfaces.IClassKeyLogic;
+	import st.crexi.as3.framework.cafe.core.interfaces.IDIRule;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest2;
 

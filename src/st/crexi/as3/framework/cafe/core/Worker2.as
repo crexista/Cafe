@@ -178,7 +178,9 @@ package st.crexi.as3.framework.cafe.core
 		
 		public function Worker2(order:AbstOrder)
 		{
-			order.$request
+			
+			_order = order;
+			_request = order.$request;
 		}
 	}
 }

@@ -13,7 +13,7 @@ package st.crexi.as3.framework.cafe.core
 	 * @author crexista
 	 * 
 	 */	
-	public class RequestProxy extends Proxy
+	internal dynamic class RequestProxy extends Proxy
 	{
 		/**
 		 * オリジナルのIRequestオブジェクトです
@@ -126,23 +126,24 @@ package st.crexi.as3.framework.cafe.core
 		public function RequestProxy(origin:IRequest2, order:AbstOrder)
 		{
 			_origin = origin;
-			_delegator = clone(origin);
+			_delegator = new Object;
+			var clone:Object = clone(origin);
 			_indexArr = new Array();
 			_notifier = new EventDispatcher();
 			var parent:AbstOrder;
 			var container:Container;
-			for (var key:String in _delegator) {				
-				if (!(_delegator[key] is AbstResult)) throw new Error("AbstResultをextendsしたproperty以外を置く事ができません");
-				_delegator[key] = new ResultProxy(order);
+			for (var key:String in clone) {				
+				//if (!(_delegator[key] is AbstResult)) throw new Error("AbstResultをextendsしたproperty以外を置く事ができません");
+				_delegator[key] = new ResultProxy(order, key);
 				_indexArr.push(key);
 				
 				//Orderが依存している他のOrderの子ノードとして登録
-				/*
-				parent = getOrder(key);
+				parent = DILogic.getOrder(key);
 				if (!parent) continue;
 				parent.$children.push(new Container(order, key));
+				_delegator[key].from(parent);
 				order.$parents.push(parent);
-				*/
+				
 				
 			}
 		}

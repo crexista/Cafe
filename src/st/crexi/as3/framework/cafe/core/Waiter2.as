@@ -1,11 +1,13 @@
 package st.crexi.as3.framework.cafe.core
 {
+	import flash.events.EventDispatcher;
+	import flash.events.IEventDispatcher;
 	import flash.utils.ByteArray;
 	
 	import mx.utils.OrderedObject;
 	
 	import st.crexi.as3.framework.cafe.core.Event.OrderEvent;
-	
+	import st.crexi.as3.framework.cafe.core.Event.WaiterEvent;
 	import st.crexi.as3.framework.cafe.utils.Stock;
 	
 	/**
@@ -27,6 +29,13 @@ package st.crexi.as3.framework.cafe.core
 		private var _orders:Vector.<AbstOrder>;
 		
 		
+		private var _eventDispatcher:IEventDispatcher;
+		
+		private var _isSync:uint = 0;
+		
+		private var _isOnCompleteSync:uint = 0;
+		
+		
 		/**
 		 * 突っ込まれたRequestの処理をスタートさせます
 		 * @param requests
@@ -41,6 +50,7 @@ package st.crexi.as3.framework.cafe.core
 			for each(var order:AbstOrder in _orders) {
 				
 				isWait = hasWaiting(order);
+
 				if (isWait) continue;
 				
 				if (!order.notifier.hasEventListener(OrderEvent.COMPLETE)) {
@@ -49,8 +59,21 @@ package st.crexi.as3.framework.cafe.core
 				
 				worker = new Worker2(order);
 				_stock.add(order, worker);
+				
+				_isSync++;
 				worker.$start();
+				_isSync--;
 			}
+			
+			if (_stock.length == 0 && _isSync == 0)  {					
+				_eventDispatcher.dispatchEvent(new WaiterEvent(WaiterEvent.ALL_COMPLETE));
+			}	
+		}
+		
+		
+		public function get notifier():IEventDispatcher
+		{
+			return _eventDispatcher;
 		}
 		
 		
@@ -59,35 +82,34 @@ package st.crexi.as3.framework.cafe.core
 		{
 			var order:AbstOrder
 			var worker:Worker2;
-			
+			order = orderEvent.order;
 			_stock.del(orderEvent.order);
 			
 			for each(var container:Container in order.$children) {
 				
 				var child:AbstOrder = container.main;
 				var isWait:Boolean = hasWaiting(child);
-				
+				_stock.add(child, null);
 				if (isWait) continue;
-				child[container.lable] = order.$result;
+				child.$request[container.lable] = order.$result;
 				
-				if (!order.notifier.hasEventListener(OrderEvent.COMPLETE)) {
-					order.notifier.addEventListener(OrderEvent.COMPLETE, onComplete)
+				if (!child.notifier.hasEventListener(OrderEvent.COMPLETE)) {
+					child.notifier.addEventListener(OrderEvent.COMPLETE, onComplete)
 				}
 
-				_stock.add(child, worker);
 				
-				//再起処理には入ってしまっているかのチェック
-				//_isOnCompleteSync++;
 				worker = new Worker2(child);
+				_stock.set(child, worker);
+				_isOnCompleteSync++;
 				worker.$start();
-				//_isOnCompleteSync--;
+				_isOnCompleteSync--;
 				
 			}
 			
-			/*
-			if (_stock.length == 0 && _isSync == 0 && _isOnCompleteSync == 0)  {				
+			if (_stock.length == 0 && _isSync == 0 && _isOnCompleteSync == 0)  {
+				trace("end");
 				_eventDispatcher.dispatchEvent(new WaiterEvent(WaiterEvent.ALL_COMPLETE));
-			}*/
+			}
 			
 		}
 		
@@ -131,8 +153,12 @@ package st.crexi.as3.framework.cafe.core
 			b.position = 0;
 			return b.readObject();
 		}
+		
+		
 		public function Waiter2()
 		{
+			_stock = new Stock();
+			_eventDispatcher = new EventDispatcher;
 		}
 	}
 }

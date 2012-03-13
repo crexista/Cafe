@@ -1,14 +1,16 @@
 package st.crexi.as3.framework.cafe.core
 {
-	import st.crexi.as3.framework.cafe.core.interfaces.IClassKeyLogic;
+	import st.crexi.as3.framework.cafe.core.interfaces.IDIRule;
+	import st.crexi.as3.framework.cafe.utils.DefaultRuleLogic;
 
 	
 	/**
+	 * DIするための規則を決めるためのクラスです
 	 * 
-	 * @author kaoru_shibasaki
+	 * @author kaora crexista
 	 * 
 	 */	
-	public class Rule
+	public class DILogic
 	{
 		
 		/**
@@ -19,21 +21,12 @@ package st.crexi.as3.framework.cafe.core
 		/**
 		 * 命名規則クラスです
 		 */		
-		private static var _logic:IClassKeyLogic;
+		private static var _logic:IDIRule = new DefaultRuleLogic;
 		
 		
 		private static var _orders:Object;
 		
 		
-		/**
-		 * 
-		 * @return 
-		 * 
-		 */		
-		internal static function get logic():IClassKeyLogic
-		{
-			return _logic;
-		}
 		
 		
 		/**
@@ -65,16 +58,17 @@ package st.crexi.as3.framework.cafe.core
 			return _orders[label];
 		}
 		
+
 		
 		/**
-		 * 
+		 * 上書きします
 		 * @param logic
 		 * 
 		 */		
-		public static function init(logic:IClassKeyLogic):void
+		public static function overwrite(rule:IDIRule):void
 		{
 			if (_isInited) throw new Error("既に初期化図身です");
-			_logic = logic;
+			_logic = rule;
 		}
 
 
@@ -84,7 +78,7 @@ package st.crexi.as3.framework.cafe.core
 		 * 呼び出すとエラーが還ります
 		 * 
 		 */		
-		public function Rule()
+		public function DILogic()
 		{
 			throw new Error("呼び出すな");
 		}
