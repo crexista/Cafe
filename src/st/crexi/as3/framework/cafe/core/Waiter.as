@@ -2,176 +2,257 @@ package st.crexi.as3.framework.cafe.core
 {
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
-	import flash.utils.Dictionary;
+	import flash.utils.ByteArray;
 	
-	import st.crexi.as3.framework.cafe.core.Event.RequestEvent;
+	import mx.controls.Menu;
+	
+	import st.crexi.as3.framework.cafe.core.Event.OrderEvent;
 	import st.crexi.as3.framework.cafe.core.Event.WaiterEvent;
-	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
+	import st.crexi.as3.framework.cafe.utils.OrderStatusType;
 	import st.crexi.as3.framework.cafe.utils.Stock;
-
+	
+	/**
+	 * Requestを受け取って処理を行うクラスです
+	 * @author kaoru_shibasaki
+	 * 
+	 */	
 	public class Waiter
 	{
 		
+		/**
+		 * このWaiterが処理するOrderが格納された配列です
+		 */		
+		private var _orders:Vector.<AbstOrder>;
+		
+		/**
+		 * 実行する,しているOrderを突っ込みます
+		 * 
+		 */		
 		private var _stock:Stock;
 		
-		private var _requests:Array;
 		
+		/**
+		 * 完了時にEventを投げます
+		 */		
 		private var _eventDispatcher:IEventDispatcher;
 		
 		
-		private var _isStop:Boolean = false;
-		
+		/**
+		 * callbackループの数です
+		 */		
 		private var _isSync:uint = 0;
 		
+		/**
+		 * callback中に呼ばれたCallBackループの数です
+		 */		
 		private var _isOnCompleteSync:uint = 0;
 		
-		internal static var $reqDic:Dictionary;
-		
 		
 		/**
-		 * 処理をスタートさせます
+		 * 突っ込まれたRequestの処理をスタートさせます
+		 * @param requests
 		 * 
 		 */		
-		public function start(requests:Array):void
+		public function start(orders:Array):void
 		{
-			_requests = requests;
-			//requestのdependencieを探索して、依存しているクラスがないor依存しているrequestの処理が
-			//終わっている場合は実行します
-			reloadChildren(Vector.<IRequest>(_requests));
-			for each(var request:IRequest in _requests) {
+			var isWait:Boolean = false;
+			var worker:Worker;
+			_orders = Vector.<AbstOrder>(orders);
+			
+			for each(var order:AbstOrder in _orders) {
+				
+				isWait = hasWaiting(order);
 
-				var worker:Worker;
-
-				var isWait:Boolean = hasWaiting(request);
 				if (isWait) continue;
-
 				
-				if (!request.notifier.hasEventListener(RequestEvent.COMPLETE)) {
-					request.notifier.addEventListener(RequestEvent.COMPLETE, onComplete);
+				if (!order.notifier.hasEventListener(OrderEvent.COMPLETE)) {
+					order.notifier.addEventListener(OrderEvent.COMPLETE, onComplete)
 				}
-				_stock.add(request, worker);
+				
+				worker = new Worker(order, this);
+				_stock.add(order, worker);
+				
 				_isSync++;
-				
-				worker = new Worker(request, this);
+				worker.$start();
 				_isSync--;
-				if (_stock.length == 0 && !_isSync)  {					
-					_eventDispatcher.dispatchEvent(new WaiterEvent(WaiterEvent.ALL_COMPLETE));
-				}				
 			}
+			
+			if (_stock.length == 0 && _isSync == 0)  {					
+				_eventDispatcher.dispatchEvent(new WaiterEvent(WaiterEvent.ALL_COMPLETE));
+			}	
 		}
 		
 		
 		/**
-		 * 複数のrequestの子供のrequestを取得してstatusをIDLEに変えて今動いている処理を捨て去る
-		 * TODO アルゴリズムがあまりにもあんまりなので、あとで見直し
-		 * @param requestsArr
 		 * 
-		 */		
-		protected function reloadChildren(requestsArr:Vector.<IRequest>):void
-		{
-			for each(var request:IRequest in requestsArr) {
-				var requests:Vector.<IRequest> = Kitchen.instance.getTasks(request);
-				if ($reqDic[request]) $reqDic[request].dispose();
-				if (!_isStop) AbstRequest(request).$status = RequestStatusType.IDLE;
-				
-				for each(request in requests) {
-					
-					if (!_isStop) AbstRequest(request).$status = RequestStatusType.IDLE;
-				
-					if ($reqDic[request]) $reqDic[request].dispose();
-					
-					if (Kitchen.instance.getTasks(request) != null) reloadChildren(requests);
-				}
-			}
-		}
-		
-		
-		
-		
-		/**
-		 * このwaiterにひもづけられたすべてのRequestをストップさせます
+		 * @return 
 		 * 
-		 */		
-		public function stop():void		
-		{
-			_isStop = true;
-			for each(var request:IRequest in _requests) {
-				if ($reqDic[request]) $reqDic[request].dispose();
-			}
-		}
-		
-		
-		
+		 */
 		public function get notifier():IEventDispatcher
 		{
 			return _eventDispatcher;
 		}
 		
 		
-		protected function onComplete(requestEvent:RequestEvent):void
-		{			
-			var requests:Vector.<IRequest> = Kitchen.instance.getTasks(requestEvent.request);
-			
-			_stock.del(requestEvent.request);
-			for each(var request:IRequest in requests) {
-
-				var worker:Worker;
-				var isWait:Boolean = hasWaiting(request);
-				if (isWait) continue;
-				
-				
-				if (!request.notifier.hasEventListener(RequestEvent.COMPLETE)) {
-					request.notifier.addEventListener(RequestEvent.COMPLETE, onComplete);
-				}
-				_stock.add(request, worker);
-				
-				//再起処理には入ってしまっているかのチェック
-				_isOnCompleteSync++;
-				worker = new Worker(request, this);
-				_isOnCompleteSync--;
-				
+		
+		/**
+		 * 現状Waiterで動かしている処理をabortさせます
+		 * 
+		 */		
+		public function stop():void
+		{
+			/*
+			_isStop = true;
+			for each(var request:IRequest in _requests) {
+				if ($reqDic[request]) $reqDic[request].dispose();
 			}
-			
-			if (_stock.length == 0 && _isSync == 0 && _isOnCompleteSync == 0)  {				
-				_eventDispatcher.dispatchEvent(new WaiterEvent(WaiterEvent.ALL_COMPLETE));
-			}
+			*/
 
 		}
 		
 		
 		/**
-		 * requestの実行を待つ必要があるかを返します
-		 * @param request
+		 * 処理をリスタートさせます
+		 * @param menu
+		 * 
+		 */		
+		public function restart(menus:Array):void
+		{
+			var orders:Array = new Array;
+			
+			for each(var menu:Menu in menus) {
+				menu.order.$argument = menu.argument;
+				orders.push(menu.order);
+				menu.order.$status = OrderStatusType.IDLE;
+				reloadChildren(menu.order);
+			}
+			
+			start(orders);
+		}
+		
+		
+		/**
+		 * menuを返します
+		 * @param order
+		 * @param argument
 		 * @return 
 		 * 
 		 */		
-		protected function hasWaiting(request:IRequest):Boolean
+		public function menu(result:AbstResult, argument:*):Menu
+		{
+			var menu:Menu = new Menu;
+			
+			menu.order = result.$order;
+			menu.argument = argument;
+			return menu;
+		}
+		
+		
+		
+		/**
+		 * 
+		 * @param orderEvent
+		 * 
+		 */
+		protected function onComplete(orderEvent:OrderEvent):void
+		{
+			var order:AbstOrder
+			var worker:Worker;
+			order = orderEvent.order;
+			_stock.del(orderEvent.order);
+			
+			for each(var container:Container in order.$children) {
+				
+				var child:AbstOrder = container.main;
+				var isWait:Boolean = hasWaiting(child);
+				_stock.add(child, null);
+				if (isWait) continue;
+				child.$request[container.lable] = order.$result;
+				
+				if (!child.notifier.hasEventListener(OrderEvent.COMPLETE)) {
+					child.notifier.addEventListener(OrderEvent.COMPLETE, onComplete)
+				}
+
+				
+				worker = new Worker(child, this);
+				_stock.set(child, worker);
+				_isOnCompleteSync++;
+				worker.$start();
+				_isOnCompleteSync--;
+				
+			}
+			
+			if (_stock.length == 0 && _isSync == 0 && _isOnCompleteSync == 0)  {
+				_eventDispatcher.dispatchEvent(new WaiterEvent(WaiterEvent.ALL_COMPLETE));
+			}
+			
+		}
+		
+		/**
+		 * Orderが何かの処理待ちが銅貨を返します
+		 * @param order
+		 * @return 
+		 * 
+		 */		
+		protected function hasWaiting(order:AbstOrder):Boolean
 		{
 			var isWait:Boolean = false;
 			
 			
-			if (request.status != RequestStatusType.IDLE) return true
+			if (order.$status != OrderStatusType.IDLE) return true
 			
-			for each(var dependency:IRequest in request.dependencies) {
-				
-
-				if (dependency.status != RequestStatusType.END) isWait = true;
+			for each(var parent:AbstOrder in order.$parents) {
+				if (parent.$status != OrderStatusType.END) isWait = true;
 				if (isWait) break;
 			}
 			
 			return isWait;
 		}
 		
+		
 		/**
 		 * 
-		 * @param requests
+		 * @param order
 		 * 
 		 */		
+		protected function reloadChildren(order:AbstOrder):void
+		{
+			for each(var container:Container in order.$children) {
+				var child:AbstOrder = container.main;
+				child.$status = OrderStatusType.IDLE;
+				if (_stock.hasKey(child)) Worker(_stock.get(child)).dispose();
+			}
+		}
+		
+		
+		
+		/**
+		 * オブジェクトをcloneします
+		 * @param arg
+		 * @return 
+		 * 
+		 */		
+		protected function clone(arg:*):* {
+			var b:ByteArray = new ByteArray();
+			
+			b.writeObject(arg);
+			b.position = 0;
+			return b.readObject();
+		}
+		
+		
 		public function Waiter()
 		{
-			if (!$reqDic) $reqDic = new Dictionary();
 			_stock = new Stock();
-			_eventDispatcher = new EventDispatcher();
+			_eventDispatcher = new EventDispatcher;
 		}
 	}
+}
+import st.crexi.as3.framework.cafe.core.AbstOrder;
+
+
+class Menu
+{
+	public var order:AbstOrder;
+	public var argument:*;
 }

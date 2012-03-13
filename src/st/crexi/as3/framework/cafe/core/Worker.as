@@ -1,37 +1,40 @@
 package st.crexi.as3.framework.cafe.core
 {
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	
-	import st.crexi.as3.framework.cafe.core.Event.RequestEvent;
+	import st.crexi.as3.framework.cafe.core.Event.OrderEvent;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRecipe;
-	import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
+	import st.crexi.as3.framework.cafe.core.interfaces.IRequest2;
+	import st.crexi.as3.framework.cafe.utils.OrderStatusType;
 
-	
-	/**
-	 * worker
-	 * @author kaora crexista
-	 * 
-	 */	
 	public class Worker
 	{
 		
 		/**
-		 * 
+		 * workerで実行するrequestです
 		 */		
-		private const RESULT:String = "result";
+		private var _request:IRequest2
 		
+		
+		/**
+		 * Workerで実行されているOrderです
+		 */
+		private var _order:AbstOrder;
+		
+		
+		
+		/**
+		 *  
+		 */		
+		private var _waiter:Waiter
 		
 		
 		/**
 		 * 
 		 */		
-		private var _request:IRequest;
-		
-		
-		private var _recipe:IRecipe;
-		
+		private var _recipe:IRecipe;		
+
 		
 		/**
 		 * 
@@ -45,17 +48,6 @@ package st.crexi.as3.framework.cafe.core
 		private var _callBack:Function;
 		
 		
-		/**
-		 * 
-		 */		
-		private var _waiter:Waiter;
-		
-		
-		
-		public static function runArg(request:IRequest, argument:*):RequestArg
-		{
-			return new RequestArg(request, argument);
-		}
 		
 		
 		
@@ -75,43 +67,31 @@ package st.crexi.as3.framework.cafe.core
 		 * @return 
 		 * 
 		 */		
-		public function get request():IRequest
+		public function get request():IRequest2
 		{
 			return _request;
 		}
 		
-		
 		/**
-		 * 
-		 * @param value
+		 * 処理をスタートさせます
 		 * 
 		 */		
-		protected function run():void
+		internal function $start():void
 		{
 			
-			
-			AbstRequest(_request).$status = RequestStatusType.INVOKING;
-			AbstRequest(_request).$isInitialized = true;
-			_recipe = _request.onReady();
+			_order.$status = OrderStatusType.INVOKING;
+			_recipe = _request.recipe;
+			_request.setup(_order.$argument);
 			if (!_recipe) {
 				_request.onSuccess(null, _waiter, this);
 				return;
 			}
+
 			if (!_recipe.eventTarget.hasEventListener(_recipe.successEventType)) {
 				_recipe.eventTarget.addEventListener(_recipe.successEventType, onSuccess(_recipe.eventTarget, _request));
 			}
 			
 			_recipe.start();
-		
-		}
-		
-		
-		
-		public function runWith(value:Vector.<RequestArg>):void
-		{
-			for each(var reqArg:RequestArg in value) {
-				//run(reqArg.request, reqArg.argument);
-			}
 		}
 		
 		
@@ -122,7 +102,7 @@ package st.crexi.as3.framework.cafe.core
 		 * @return 
 		 * 
 		 */		
-		protected function onSuccess(target:IEventDispatcher, request:IRequest):Function
+		protected function onSuccess(target:IEventDispatcher, request:IRequest2):Function
 		{
 			var worker:Worker = this;
 			
@@ -132,10 +112,10 @@ package st.crexi.as3.framework.cafe.core
 			};
 			_callBack = callBack;
 			return callBack;
-
+			
 		}
 		
-
+		
 		/**
 		 * recipeに描いてある予定通りerrorEventが帰ってきたときに実行されるメソッドです
 		 * @param target
@@ -143,7 +123,7 @@ package st.crexi.as3.framework.cafe.core
 		 * @return 
 		 * 
 		 */		
-		protected function onError(target:IEventDispatcher, request:IRequest):Function
+		protected function onError(target:IEventDispatcher, request:IRequest2):Function
 		{			
 			var worker:Worker = this;			
 			var callBack:Function = function (event:Event):void
@@ -152,20 +132,26 @@ package st.crexi.as3.framework.cafe.core
 			};
 			
 			return callBack;
-
+			
 		}
-
+		
+		
 		/**
 		 * 
 		 * @param value
 		 * 
 		 */		
-		public function end(value:*=null):void
+		public function end(value:AbstResult = null):void
 		{
-			if (value != null) AbstRequest(_request).$result = value;
-			AbstRequest(_request).$status = RequestStatusType.END;
+			if (value != null) {
+				_order.$result = value;
+				value.from(_order);
+			}
+			_order.$status = OrderStatusType.END;
+			
 			if (_recipe) _recipe.eventTarget.removeEventListener(_recipe.successEventType, _callBack);
-			_request.notifier.dispatchEvent(new RequestEvent(RequestEvent.COMPLETE, _request));
+			
+			_order.notifier.dispatchEvent(new OrderEvent(OrderEvent.COMPLETE, _order));
 		}
 		
 		
@@ -178,80 +164,30 @@ package st.crexi.as3.framework.cafe.core
 		 */		
 		public function abort(value:* = null):void
 		{
-			if (value != null) AbstRequest(_request).$result = value;
-			AbstRequest(_request).$status = RequestStatusType.END;
+			if (value != null) _order.$result = value;
+			_order.$status = OrderStatusType.END;
 			if (_recipe) _recipe.eventTarget.removeEventListener(_recipe.successEventType, _callBack);
-			_request.notifier.dispatchEvent(new RequestEvent(RequestEvent.ABORT, _request));
+			_order.notifier.dispatchEvent(new OrderEvent(OrderEvent.ABORT, _order));
 			
 		}
 		
 		
+		/**
+		 * 
+		 * 
+		 */		
 		public function dispose():void
 		{
 			if (_recipe) _recipe.eventTarget.removeEventListener(_recipe.successEventType, _callBack);
 		}
 
-
-		/**
-		 * コンストラクタです
-		 * @param request
-		 * 
-		 */
-		public function Worker(request:IRequest, waiter:Waiter)
+		
+		public function Worker(order:AbstOrder, waiter:Waiter)
 		{
+			
+			_order = order;
+			_request = order.$request;
 			_waiter = waiter;
-			_notifier = new EventDispatcher();
-			_request = request;
-			run();
 		}
-	}
-}
-
-
-
-
-import st.crexi.as3.framework.cafe.core.interfaces.IRequest;
-
-
-class RequestArg
-{
-	
-	/**
-	 * 
-	 */	
-	private var _request:IRequest;
-	
-	/**
-	 * 
-	 */	
-	private var _argument:*;
-	
-
-	/**
-	 * 
-	 * @return 
-	 * 
-	 */
-	public function get request():IRequest
-	{
-		return _request;
-	}
-	
-	
-	/**
-	 * 
-	 * @return 
-	 * 
-	 */	
-	public function get argument():*
-	{
-		return _argument;
-	}
-	
-	
-	public function RequestArg(request:IRequest, argument:*) 
-	{
-		_request = request;
-		_argument = argument;
 	}
 }

@@ -5,6 +5,7 @@ package st.crexi.as3.framework.cafe.core
 	
 	import st.crexi.as3.framework.cafe.core.errors.NonrecognitionUseError;
 	import st.crexi.as3.framework.cafe.core.interfaces.IRequest2;
+	import st.crexi.as3.framework.cafe.utils.OrderStatusType;
 	
 	/**
 	 * IRequestの実装クラスのwrapperクラスです
@@ -49,7 +50,7 @@ package st.crexi.as3.framework.cafe.core
 		/**
 		 * Orderの進行状況です
 		 */		
-		internal var $status:String = RequestStatusType.IDLE;
+		internal var $status:String = OrderStatusType.IDLE;
 		
 		
 		/**

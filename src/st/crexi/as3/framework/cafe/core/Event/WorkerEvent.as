@@ -1,7 +1,7 @@
 package st.crexi.as3.framework.cafe.core.Event
 {
 	import flash.events.Event;
-	
+		
 	import st.crexi.as3.framework.cafe.core.Worker;
 	
 	

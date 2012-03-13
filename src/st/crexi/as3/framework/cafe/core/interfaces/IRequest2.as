@@ -2,8 +2,8 @@ package st.crexi.as3.framework.cafe.core.interfaces
 {
 	import flash.events.Event;
 	
-	import st.crexi.as3.framework.cafe.core.Waiter2;
-	import st.crexi.as3.framework.cafe.core.Worker2;
+	import st.crexi.as3.framework.cafe.core.Waiter;
+	import st.crexi.as3.framework.cafe.core.Worker;
 
 	
 	/**
@@ -50,7 +50,7 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		 * @param event
 		 * 
 		 */		
-		function onSuccess(event:Event, waiter:Waiter2, worker:Worker2):void;
+		function onSuccess(event:Event, waiter:Waiter, worker:Worker):void;
 		
 		
 		
@@ -60,6 +60,6 @@ package st.crexi.as3.framework.cafe.core.interfaces
 		 * @param event
 		 * 
 		 */		
-		function onError(event:Event, waiter:Waiter2, worker:Worker2):void;
+		function onError(event:Event, waiter:Waiter, worker:Worker):void;
 	}
 }

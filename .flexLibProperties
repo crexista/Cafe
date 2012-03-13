@@ -5,7 +5,7 @@
     <classEntry path="st.crexi.as3.framework.cafe.core.RequestProxy"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.AbstResult"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.ResultProxy"/>
-    <classEntry path="st.crexi.as3.framework.cafe.core.Worker2"/>
+    <classEntry path="st.crexi.as3.framework.cafe.core.Worker"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.Event.OrderEvent"/>
     <classEntry path="st.crexi.as3.framework.cafe.core.Container"/>
     <classEntry path="st.crexi.as3.framework.cafe.utils.DefaultRuleLogic"/>

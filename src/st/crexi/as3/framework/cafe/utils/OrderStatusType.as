@@ -1,6 +1,6 @@
-package st.crexi.as3.framework.cafe.core
+package st.crexi.as3.framework.cafe.utils
 {
-	public class RequestStatusType
+	public class OrderStatusType
 	{
 		
 		/**
