@@ -3,6 +3,6 @@
 .project
 .settings/
 .bin/
-bin/
 bin-debug/
+html-template/
 .svn/
